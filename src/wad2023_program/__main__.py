@@ -41,13 +41,18 @@ class SortField(str, Enum):
         return self.name.lower()
 
 
-def main(sort: SortField = SortField.START_TIME) -> None:
+def main(
+        sort: SortField = SortField.START_TIME,
+        in_title: str = '',
+        in_speaker: str = ''
+) -> None:
     """Script function for the program.
 
     The function that gets called when starting the script.
 
     Args
-        sort: the field on what to sort
+        sort: the field on what to sort.
+        in_title: filter on words in the title.
     """
     # Get the program
     program = get_program()
@@ -56,6 +61,14 @@ def main(sort: SortField = SortField.START_TIME) -> None:
     # the column given by the user
     program.sort(key=lambda x: x.start_time)
     program.sort(key=lambda x: getattr(x, sort.field_name))
+
+    # Filter
+    if len(in_title) > 0:
+        program = filter(lambda session: in_title.lower()
+                         in session.title.lower(), program)
+    if len(in_speaker) > 0:
+        program = filter(lambda session: in_speaker.lower()
+                         in session.speaker.lower(), program)
 
     # Create a Rich console for a beautiful display
     console = Console()

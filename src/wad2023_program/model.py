@@ -65,7 +65,7 @@ class Session(Model):
         tags: a list with tags.
     """
 
-    title: str | None = None
+    title: str = ''
     stage: Stage | None = None
     speakers: list[Speaker] = []
     start_time: datetime = datetime.now()
