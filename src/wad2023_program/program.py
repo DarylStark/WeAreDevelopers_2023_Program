@@ -108,16 +108,21 @@ def parse_program(program_html: str) -> list[Session]:
     return conference_session_list
 
 
-def get_program() -> list[Session]:
+def get_program(cache: bool = True) -> list[Session]:
     """Get the program.
 
     Retrieves the program from cache or, if that fails, from the web and
     returns it parsed.
 
+    Args:
+        from_cache: specify if the page can be retrieved from cache.
+
     Returns:
         The parsed program.
     """
     try:
+        if not cache:
+            raise FileNotFoundError
         program = get_program_from_cache()
     except FileNotFoundError:
         program = download_program()

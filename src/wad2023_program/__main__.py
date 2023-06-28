@@ -62,7 +62,8 @@ def start(
         in_title: str = '',
         in_speaker: str = '',
         stage: str = '',
-        output: DataOutput = DataOutput.TABLE
+        output: DataOutput = DataOutput.TABLE,
+        cache: bool = True
 ) -> None:
     """Script function for the program.
 
@@ -73,9 +74,11 @@ def start(
         in_title: filter on words in the title.
         in_speaker: filter on words in the speakers.
         stage: specify a specific stage.
+        output: specifies what kind of output the user wants.
+        from_cache: specifies if the cache has to be used.
     """
     # Get the program
-    program = get_program()
+    program = get_program(cache=cache)
 
     # Sort the program. We always sort on start time first, before sorting on
     # the column given by the user
