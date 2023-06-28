@@ -1,0 +1,25 @@
+{
+    // Python configuration
+    "python.analysis.typeCheckingMode": "basic",
+    "python.analysis.autoImportCompletions": true,
+    // Python linting
+    "python.linting.enabled": true,
+    "python.analysis.extraPaths": [
+        "src"
+    ],
+    "python.linting.pylintEnabled": true,
+    "python.linting.pycodestyleEnabled": true,
+    "python.linting.mypyEnabled": true,
+    "python.linting.mypyCategorySeverity.note": "Information",
+    "python.linting.flake8Enabled": true,
+    "python.linting.pydocstyleEnabled": true,
+    // Python formatting
+    "editor.formatOnSave": true,
+    "python.formatting.provider": "autopep8",
+    // Python unit testing
+    "python.testing.pytestEnabled": true,
+    "python.testing.unittestEnabled": false,
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.autopep8"
+    },
+}
