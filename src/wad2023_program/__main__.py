@@ -23,10 +23,10 @@ class SortField(str, Enum):
         _title: sort on the title.
         _speaker: sort on the speakername.
     """
-    _start_time = 'start'
-    _end_time = 'end'
-    _title = 'title'
-    _speaker = 'speaker'
+    START_TIME = 'start'
+    END_TIME = 'end'
+    TITLE = 'title'
+    SPEAKER = 'speaker'
 
     @property
     def field_name(self) -> str:
@@ -38,10 +38,10 @@ class SortField(str, Enum):
         Returns:
             The normalized name.
         """
-        return '_'.join(self.name.split('_')[1:])
+        return self.name.lower()
 
 
-def main(sort: SortField = SortField._start_time) -> None:
+def main(sort: SortField = SortField.START_TIME) -> None:
     """Script function for the program.
 
     The function that gets called when starting the script.
