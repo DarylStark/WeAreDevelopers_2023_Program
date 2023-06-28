@@ -45,7 +45,8 @@ class SortField(str, Enum):
 def main(
         sort: SortField = SortField.START_TIME,
         in_title: str = '',
-        in_speaker: str = ''
+        in_speaker: str = '',
+        stage: str = ''
 ) -> None:
     """Script function for the program.
 
@@ -65,11 +66,15 @@ def main(
 
     # Filter
     if len(in_title) > 0:
-        program = filter(lambda session: in_title.lower()
-                         in session.title.lower(), program)
+        program = list(filter(lambda session: in_title.lower()
+                              in session.title.lower(), program))
     if len(in_speaker) > 0:
-        program = filter(lambda session: in_speaker.lower()
-                         in session.speaker.lower(), program)
+        program = list(filter(lambda session: in_speaker.lower()
+                              in session.speaker.lower(), program))
+    if len(stage) > 0:
+        program = list(filter(lambda session:
+                              session.stage_name.lower() == stage.lower(),
+                              program))
 
     # Create a Rich console for a beautiful display
     console = Console()
