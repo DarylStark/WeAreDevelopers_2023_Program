@@ -27,6 +27,7 @@ class SortField(str, Enum):
     END_TIME = 'end'
     TITLE = 'title'
     SPEAKER = 'speaker'
+    STAGE_NAME = 'stage'
 
     @property
     def field_name(self) -> str:
@@ -78,6 +79,7 @@ def main(
     table.add_column('Date')
     table.add_column('Start')
     table.add_column('End')
+    table.add_column('Stage')
     table.add_column('Title')
     table.add_column('Speakers')
 
@@ -87,6 +89,7 @@ def main(
             f'{item.start_time:%Y-%m-%d}',
             f'{item.start_time:%H:%M}',
             f'{item.end_time:%H:%M}',
+            item.stage_name,
             item.title,
             item.speaker
         )

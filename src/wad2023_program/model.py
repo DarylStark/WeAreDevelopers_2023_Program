@@ -47,8 +47,8 @@ class Stage(Model):
         name: the name of the stage.
     """
 
-    id: int
-    name: str
+    id: int = 0
+    name: str = ''
 
 
 class Session(Model):
@@ -66,7 +66,7 @@ class Session(Model):
     """
 
     title: str = ''
-    stage: Stage | None = None
+    stage: Stage = Stage()
     speakers: list[Speaker] = []
     start_time: datetime = datetime.now()
     end_time: datetime = datetime.now()
@@ -83,3 +83,11 @@ class Session(Model):
             The speaker name as a string.
         """
         return ', '.join([speaker.name for speaker in self.speakers])
+
+    @property
+    def stage_name(self) -> str:
+        """Get the stage name.
+
+        Returns the name of the stage as a string.
+        """
+        return self.stage.name
