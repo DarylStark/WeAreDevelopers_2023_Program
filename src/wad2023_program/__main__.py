@@ -23,6 +23,7 @@ class SortField(str, Enum):
         _title: sort on the title.
         _speaker: sort on the speakername.
     """
+
     START_TIME = 'start'
     END_TIME = 'end'
     TITLE = 'title'
@@ -52,9 +53,11 @@ def main(
 
     The function that gets called when starting the script.
 
-    Args
+    Args:
         sort: the field on what to sort.
         in_title: filter on words in the title.
+        in_speaker: filter on words in the speakers.
+        stage: specify a specific stage.
     """
     # Get the program
     program = get_program()

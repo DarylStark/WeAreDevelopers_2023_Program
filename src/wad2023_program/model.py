@@ -12,6 +12,7 @@ class Model(BaseModel):
 
     Contains the main attributes for Model classes.
     """
+
     class Config:
         """Config for the models.
 
@@ -91,6 +92,9 @@ class Session(Model):
 
         Returns the name of the stage as a string. The API for the program adds
         a number to the stage. We filter this out.
+
+        Returns:
+            The name of the stage.
         """
         stage_name = re.findall(r'^[A-Za-z0-9\ ]+', self.stage.name)
         return stage_name[0].strip()
