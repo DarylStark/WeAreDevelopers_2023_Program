@@ -2,6 +2,7 @@
 
 Contains the models for the application.
 """
+import re
 from datetime import datetime
 from pydantic import BaseModel
 
@@ -88,6 +89,8 @@ class Session(Model):
     def stage_name(self) -> str:
         """Get the stage name.
 
-        Returns the name of the stage as a string.
+        Returns the name of the stage as a string. The API for the program adds
+        a number to the stage. We filter this out.
         """
-        return self.stage.name
+        stage_name = re.findall(r'^[A-Za-z0-9\ ]+', self.stage.name)
+        return stage_name[0].strip()
