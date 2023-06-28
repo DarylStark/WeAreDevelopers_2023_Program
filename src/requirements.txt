@@ -3,3 +3,5 @@ pydantic
 beautifulsoup4
 python-dateutil
 types-python-dateutil
+rich
+typer
