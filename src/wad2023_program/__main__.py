@@ -18,10 +18,11 @@ class SortField(str, Enum):
     Specifies the field to sort on.
 
     Attributes:
-        _start_time: sort on the start time.
-        _end_time: sort on the end time.
-        _title: sort on the title.
-        _speaker: sort on the speakername.
+        START_TIME: sort on the start time.
+        END_TIME: sort on the end time.
+        TITLE: sort on the title.
+        SPEAKER: sort on the speakername.
+        STAGE_NAME: sort on the stagename.
     """
 
     START_TIME = 'start'
@@ -43,11 +44,25 @@ class SortField(str, Enum):
         return self.name.lower()
 
 
+class DataOutput(str, Enum):
+    """Output specification.
+
+    Specifies how to output data.
+
+    Attributes:
+        TABLE: display as table.
+        CSV: display as CSV.
+    """
+    TABLE = 'table'
+    CSV = 'csv'
+
+
 def start(
         sort: SortField = SortField.START_TIME,
         in_title: str = '',
         in_speaker: str = '',
-        stage: str = ''
+        stage: str = '',
+        output: DataOutput = DataOutput.TABLE
 ) -> None:
     """Script function for the program.
 
@@ -83,27 +98,35 @@ def start(
     console = Console()
 
     # Create a table to display the program
-    table = Table(box=box.HORIZONTALS)
-    table.add_column('Date')
-    table.add_column('Start')
-    table.add_column('End')
-    table.add_column('Stage')
-    table.add_column('Title')
-    table.add_column('Speakers')
+    if output == DataOutput.TABLE:
+        table = Table(box=box.HORIZONTALS)
+        table.add_column('Date')
+        table.add_column('Start')
+        table.add_column('End')
+        table.add_column('Stage')
+        table.add_column('Title')
+        table.add_column('Speakers')
 
-    # Add the rows
-    for item in program:
-        table.add_row(
-            f'{item.start_time:%Y-%m-%d}',
-            f'{item.start_time:%H:%M}',
-            f'{item.end_time:%H:%M}',
-            item.stage_name,
-            item.title,
-            item.speaker
-        )
+        # Add the rows
+        for item in program:
+            table.add_row(
+                f'{item.start_time:%Y-%m-%d}',
+                f'{item.start_time:%H:%M}',
+                f'{item.end_time:%H:%M}',
+                item.stage_name,
+                item.title,
+                item.speaker
+            )
 
-    # Show the nice table
-    console.print(table)
+        # Show the nice table
+        console.print(table)
+
+    if output == DataOutput.CSV:
+        for item in program:
+            console.print(
+                f'"{item.start_time:%Y-%m-%d}","{item.start_time:%H:%M}",' +
+                f'"{item.end_time:%H:%M}","{item.stage_name}","{item.title}",' +
+                f'"{item.speaker}"')
 
 
 def main() -> None:
