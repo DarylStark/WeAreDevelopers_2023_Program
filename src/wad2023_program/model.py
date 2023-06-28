@@ -68,8 +68,8 @@ class Session(Model):
     title: str | None = None
     stage: Stage | None = None
     speakers: list[Speaker] = []
-    start_time: datetime | None = None
-    end_time: datetime | None = None
+    start_time: datetime = datetime.now()
+    end_time: datetime = datetime.now()
     tags: list[str] = []
 
     @property
