@@ -2,14 +2,14 @@
 
 Contains the main script for the WAD2023 applican.
 """
+from enum import Enum
+
+import typer
 from rich import box
 from rich.console import Console
 from rich.table import Table
-import typer
 
 from .program import get_program
-
-from enum import Enum
 
 
 class SortField(str, Enum):
@@ -23,6 +23,7 @@ class SortField(str, Enum):
         _title: sort on the title.
         _speaker: sort on the speakername.
     """
+
     START_TIME = 'start'
     END_TIME = 'end'
     TITLE = 'title'
@@ -41,12 +42,12 @@ class SortField(str, Enum):
         return self.name.lower()
 
 
-def main(sort: SortField = SortField.START_TIME) -> None:
+def start(sort: SortField = SortField.START_TIME) -> None:
     """Script function for the program.
 
     The function that gets called when starting the script.
 
-    Args
+    Args:
         sort: the field on what to sort
     """
     # Get the program
@@ -82,5 +83,10 @@ def main(sort: SortField = SortField.START_TIME) -> None:
     console.print(table)
 
 
+def main() -> None:
+    """Start the script as a Typer app."""
+    typer.run(start)
+
+
 if __name__ == '__main__':
-    typer.run(main)
+    main()
