@@ -1,3 +1,7 @@
+"""Main module.
+
+Contains the main script for the WAD2023 applican.
+"""
 import requests
 from dateutil import parser
 
@@ -11,13 +15,28 @@ config = AppConfig()
 
 
 def get_program_from_cache() -> str:
+    """Get program from cache file.
+
+    Retrieves the program from the saved cache file.
+
+    Returns:
+        The HTML for the program in the cache file.
+    """
     with open(config.cache_file, 'r', encoding='utf-16') as cache_file_handle:
         return cache_file_handle.read()
 
 
 def download_program() -> str:
-    print('downloading_program')
-    # Download program
+    """Get program from the web.
+
+    Retrieves the program from the web URL.
+
+    Returns:
+        The HTML for the program on the web.
+
+    Raises:
+        ValueError: when a wrong status code is returned.
+    """
     program_request = requests.get(config.program_url, config.program_params)
     if program_request.status_code != 200:
         raise ValueError(
@@ -26,7 +45,18 @@ def download_program() -> str:
     return program_request.text
 
 
-def parse_program(program_html) -> list[Session]:
+def parse_program(program_html: str) -> list[Session]:
+    """Parse the HTML for the program.
+
+    Parses the program from the HTML returned by the webpage or from the cache.
+
+    Args:
+        program_html: the HTML from cache or from the web that contains the
+            program.
+
+    Returns:
+        A list with all Sessions.
+    """
     # Empty session list
     conference_session_list: list[Session] = []
 
@@ -72,21 +102,32 @@ def parse_program(program_html) -> list[Session]:
 
 
 def get_program() -> list[Session]:
+    """Get the program.
+
+    Retrieves the program from cache or, if that fails, from the web and
+    returns it parsed.
+
+    Returns:
+        The parsed program.
+    """
     try:
         program = get_program_from_cache()
     except FileNotFoundError:
         program = download_program()
-        with open(config.cache_file, 'w', encoding='utf-16') as cache_file_handle:
+        with open(config.cache_file,
+                  'w',
+                  encoding='utf-16') as cache_file_handle:
             cache_file_handle.write(str(program))
     return parse_program(program)
 
 
 def main() -> None:
+    """Script function for the program.
 
+    The function that gets called when starting the script.
+    """
     # Get the program
     program = get_program()
-
-    pass
 
 
 if __name__ == '__main__':
