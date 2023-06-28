@@ -71,3 +71,15 @@ class Session(Model):
     start_time: datetime | None = None
     end_time: datetime | None = None
     tags: list[str] = []
+
+    @property
+    def speaker(self) -> str:
+        """Get the speaker name.
+
+        Returns the speaker name as a string. Can be useful when sorting a list
+        of sessions.
+
+        Returns:
+            The speaker name as a string.
+        """
+        return ', '.join([speaker.name for speaker in self.speakers])
