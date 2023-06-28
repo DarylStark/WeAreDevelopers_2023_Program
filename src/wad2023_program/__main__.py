@@ -28,6 +28,7 @@ class SortField(str, Enum):
     END_TIME = 'end'
     TITLE = 'title'
     SPEAKER = 'speaker'
+    STAGE_NAME = 'stage'
 
     @property
     def field_name(self) -> str:
@@ -42,13 +43,21 @@ class SortField(str, Enum):
         return self.name.lower()
 
 
-def start(sort: SortField = SortField.START_TIME) -> None:
+def start(
+        sort: SortField = SortField.START_TIME,
+        in_title: str = '',
+        in_speaker: str = '',
+        stage: str = ''
+) -> None:
     """Script function for the program.
 
     The function that gets called when starting the script.
 
     Args:
-        sort: the field on what to sort
+        sort: the field on what to sort.
+        in_title: filter on words in the title.
+        in_speaker: filter on words in the speakers.
+        stage: specify a specific stage.
     """
     # Get the program
     program = get_program()
@@ -58,6 +67,18 @@ def start(sort: SortField = SortField.START_TIME) -> None:
     program.sort(key=lambda x: x.start_time)
     program.sort(key=lambda x: getattr(x, sort.field_name))
 
+    # Filter
+    if len(in_title) > 0:
+        program = list(filter(lambda session: in_title.lower()
+                              in session.title.lower(), program))
+    if len(in_speaker) > 0:
+        program = list(filter(lambda session: in_speaker.lower()
+                              in session.speaker.lower(), program))
+    if len(stage) > 0:
+        program = list(filter(lambda session:
+                              session.stage_name.lower() == stage.lower(),
+                              program))
+
     # Create a Rich console for a beautiful display
     console = Console()
 
@@ -66,6 +87,7 @@ def start(sort: SortField = SortField.START_TIME) -> None:
     table.add_column('Date')
     table.add_column('Start')
     table.add_column('End')
+    table.add_column('Stage')
     table.add_column('Title')
     table.add_column('Speakers')
 
@@ -75,6 +97,7 @@ def start(sort: SortField = SortField.START_TIME) -> None:
             f'{item.start_time:%Y-%m-%d}',
             f'{item.start_time:%H:%M}',
             f'{item.end_time:%H:%M}',
+            item.stage_name,
             item.title,
             item.speaker
         )

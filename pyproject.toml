@@ -3,7 +3,7 @@ requires = ['setuptools>=61.1.0', 'wheel']
 build-backend = 'setuptools.build_meta'
 
 [project]
-name = "was2023-program"
+name = "wad2023-program"
 version = "0.0.1-dev"
 description = "Script to retrieve the program for WeAreDevelopers 2023 conference"
 readme = "README.md"
@@ -22,7 +22,7 @@ dependencies = [
     "rich >= 13.4.0",
     "typer >= 0.9.0"
 ]
-requires-python = ">=3.10"
+requires-python = ">=3.9"
 
 [project.optional-dependencies]
 dev = [
@@ -36,7 +36,7 @@ dev = [
 ]
 
 [project.scripts]
-fortibroker = "wad2023_program.__main__:main"
+wad23 = "wad2023_program.__main__:main"
 
 [tool.bumpver]
 current_version = "0.0.1-dev"

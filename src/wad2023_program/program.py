@@ -3,11 +3,11 @@
 Module that contains all functions to retrieve and parse the program.
 """
 
-import requests
-from dateutil import parser
 from os.path import expanduser
 
+import requests
 from bs4 import BeautifulSoup
+from dateutil import parser
 
 from .app_config import AppConfig
 from .model import Session, Speaker, Stage
@@ -41,7 +41,10 @@ def download_program() -> str:
     Raises:
         ValueError: when a wrong status code is returned.
     """
-    program_request = requests.get(config.program_url, config.program_params)
+    program_request = requests.get(
+        url=config.program_url,
+        params=config.program_params,
+        timeout=10)
     if program_request.status_code != 200:
         raise ValueError(
             ('Did not receive responsecode 200; got ' +

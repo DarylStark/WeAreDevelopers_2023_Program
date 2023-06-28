@@ -1,6 +1,7 @@
 requests
 pydantic
 beautifulsoup4
+types-beautifulsoup4
 python-dateutil
 types-python-dateutil
 rich
