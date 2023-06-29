@@ -3,4 +3,4 @@
 Exposes a CLI application to retrieve the program and filter on it.
 """
 
-__version__ = '1.2.1-dev'
+__version__ = '1.2.1'
