@@ -16,3 +16,9 @@ jobs:
     needs: check-version
     with:
       code-quality-may-fail: false
+  build-and-deploy:
+    name: Deployment
+    uses: ./.github/workflows/_deploy.yml
+    needs: integration
+    secrets:
+      pypi_token: ${{ secrets.PYPI_TOKEN }}
