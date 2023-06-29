@@ -2,6 +2,14 @@
 
 In less then a month, the [WeAreDevelopers 2023](https://www.wearedevelopers.com/world-congress) conference is finally starting! Two days of being with like-minded people, talking about code and infrastructure! If you're like me, you're very excited about this, but a bit overwhelmed by the 236 session that are planned. It's difficult to pick the sessions that are right for me. The [programpage](https://www.wearedevelopers.com/world-congress/program) on the website is not really to my liking, so I decided to create a small CLI script to browse through the sessions.
 
+# Installation
+
+Installation can be done using `pip`:
+
+```bash
+pip install wad2023-program
+```
+
 ## Usage
 
 After installing, the CLI script can be executed by executing the `wad23` command in your browser. By executing it without arguments, you get a complete list of all sessions. the first time you run the script, it will download these sessions from the program page (from [Sessionize](https://sessionize.com/api/v2/tx3wi18f/view/Sessions) to be precise) and save the page to your `.cache` folder in your homefolder (the folder will be created if it doesn't exist). All subsequent requests will be done using the cache the original page is not flooded with requests.

@@ -35,6 +35,10 @@ dev = [
     'pydocstyle == 6.3.0',
 ]
 
+[project.urls]
+homepage = "https://github.com/DarylStark/WeAreDevelopers_2023_Program"
+repository = "https://github.com/DarylStark/WeAreDevelopers_2023_Program"
+
 [project.scripts]
 wad23 = "wad2023_program.__main__:main"
 
