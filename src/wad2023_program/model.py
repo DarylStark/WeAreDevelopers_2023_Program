@@ -89,6 +89,7 @@ class Session(Model):
     start_time: datetime = datetime.now()
     end_time: datetime = datetime.now()
     tags: list[str] = []
+    description: str = ''
 
     @property
     def speaker(self) -> str:

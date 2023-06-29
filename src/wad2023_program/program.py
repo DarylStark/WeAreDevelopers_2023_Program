@@ -81,6 +81,12 @@ def parse_program(program_html: str) -> list[Session]:
         # Get the title
         session_object.title = session.find_all('h3')[0].text.strip()
 
+        # Get the description
+        description_tag = session.find_all(
+            'p', {'class': 'sz-session__description'})
+        if len(description_tag) == 1:
+            session_object.description = description_tag[0].text.strip()
+
         # Get the stage
         stage = session.find_all('div', {'class': 'sz-session__room'})[0]
         session_object.stage = Stage(
