@@ -3,7 +3,8 @@
 Module that contains all functions to retrieve and parse the program.
 """
 
-from os.path import expanduser
+from os.path import expanduser, dirname
+from pathlib import Path
 
 import requests
 from bs4 import BeautifulSoup
@@ -126,7 +127,14 @@ def get_program(cache: bool = True) -> list[Session]:
         program = get_program_from_cache()
     except FileNotFoundError:
         program = download_program()
-        with open(expanduser(config.cache_file),
+
+        # Create cache directory
+        cache_file = expanduser(config.cache_file)
+        directory = dirname(cache_file)
+        Path(directory).mkdir(parents=True, exist_ok=True)
+
+        # Write to cache
+        with open(cache_file,
                   'w',
                   encoding='utf-16') as cache_file_handle:
             cache_file_handle.write(str(program))

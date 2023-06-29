@@ -11,8 +11,7 @@
             "module": "wad2023_program",
             "console": "integratedTerminal",
             "justMyCode": true,
-            "cwd": "${workspaceFolder}/src",
-            "envFile": "${workspaceFolder}/.environment/dev.env",
+            "cwd": "${workspaceFolder}/src"
         },
     ]
 }
