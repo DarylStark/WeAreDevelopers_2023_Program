@@ -7,8 +7,9 @@ from enum import Enum
 
 import typer
 from rich import box
-from rich.console import Console
+from rich.console import Console, Group
 from rich.table import Table
+from rich.panel import Panel
 
 from .program import get_program
 
@@ -57,6 +58,7 @@ class DataOutput(str, Enum):
 
     TABLE = 'table'
     CSV = 'csv'
+    DETAILS = 'details'
 
 
 def start(
@@ -143,6 +145,23 @@ def start(
                 f'"{item.title}";' +
                 f'"{item.description}";' +
                 f'"{item.speaker}"')
+
+    if output == DataOutput.DETAILS:
+        for item in program:
+            table = Table(box=box.MINIMAL, show_header=False)
+            table.add_column('Field')
+            table.add_column('Information')
+            table.add_row('Title', item.title)
+            table.add_row(
+                'Date', (f'{item.start_time_berlin:%Y-%m-%d} ' +
+                         f'({item.start_time_berlin:%H:%M} - ' +
+                         f'{item.end_time_berlin:%H:%M})'))
+            table.add_row('Stage', item.stage_name)
+            table.add_row('Speakers', item.speaker)
+            console.print(
+                Panel(
+                    Group(table, item.description)
+                ))
 
 
 def main() -> None:
