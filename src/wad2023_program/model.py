@@ -4,7 +4,23 @@ Contains the models for the application.
 """
 import re
 from datetime import datetime
+
+import pytz
 from pydantic import BaseModel
+
+
+def to_timezone(datetime_utc: datetime, timezone: str) -> datetime:
+    """Convert a UTC time to a specific timezone.
+
+    Args:
+        datetime_utc: the datetime object to convert.
+        timezone: the timezone to convert to. Example: "Europe/Amsterdam.
+
+    Returns:
+        A datetime-object with the time in the set Timezone.
+    """
+    new_timezone = pytz.timezone(timezone)
+    return datetime_utc.replace(tzinfo=pytz.utc).astimezone(tz=new_timezone)
 
 
 class Model(BaseModel):
@@ -98,3 +114,25 @@ class Session(Model):
         """
         stage_name = re.findall(r'^[A-Za-z0-9\ ]+', self.stage.name)
         return stage_name[0].strip()
+
+    @property
+    def start_time_berlin(self) -> datetime:
+        """Get the start time in Berlin timezone.
+
+        Returns the start time in Berlin timezone instead of UTC.
+
+        Returns:
+            The start time in Berlin timezone.
+        """
+        return to_timezone(self.start_time, "Europe/Amsterdam")
+
+    @property
+    def end_time_berlin(self) -> datetime:
+        """Get the end time in Berlin timezone.
+
+        Returns the end time in Berlin timezone instead of UTC.
+
+        Returns:
+            The end time in Berlin timezone.
+        """
+        return to_timezone(self.end_time, "Europe/Amsterdam")

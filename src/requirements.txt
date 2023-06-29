@@ -6,3 +6,5 @@ python-dateutil
 types-python-dateutil
 rich
 typer
+pytz
+types-pytz

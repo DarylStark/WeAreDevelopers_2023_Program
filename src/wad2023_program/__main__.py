@@ -2,6 +2,7 @@
 
 Contains the main script for the WAD2023 applican.
 """
+
 from enum import Enum
 
 import typer
@@ -114,9 +115,9 @@ def start(
         # Add the rows
         for item in program:
             table.add_row(
-                f'{item.start_time:%Y-%m-%d}',
-                f'{item.start_time:%H:%M}',
-                f'{item.end_time:%H:%M}',
+                f'{item.start_time_berlin:%Y-%m-%d}',
+                f'{item.start_time_berlin:%H:%M}',
+                f'{item.end_time_berlin:%H:%M}',
                 item.stage_name,
                 item.title,
                 item.speaker
@@ -129,9 +130,12 @@ def start(
         console.print('"Date";"Start";"End";"Stage";"Title";"Speakers"')
         for item in program:
             console.print(
-                f'"{item.start_time:%Y-%m-%d}";"{item.start_time:%H:%M:%S}";' +
-                f'"{item.end_time:%H:%M:%S}";"{item.stage_name}";' +
-                f'"{item.title}";"{item.speaker}"')
+                f'"{item.start_time_berlin:%Y-%m-%d}";' +
+                f'"{item.start_time_berlin:%H:%M:%S}";' +
+                f'"{item.end_time_berlin:%H:%M:%S}";' +
+                f'"{item.stage_name}";' +
+                f'"{item.title}";' +
+                f'"{item.speaker}"')
 
 
 def main() -> None:
