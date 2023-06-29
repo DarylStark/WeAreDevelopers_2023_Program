@@ -3,7 +3,7 @@
 Module that contains all functions to retrieve and parse the program.
 """
 
-from os.path import expanduser, dirname
+from os.path import dirname, expanduser
 from pathlib import Path
 
 import requests
@@ -116,7 +116,7 @@ def get_program(cache: bool = True) -> list[Session]:
     returns it parsed.
 
     Args:
-        from_cache: specify if the page can be retrieved from cache.
+        cache: specify if the page can be retrieved from cache.
 
     Returns:
         The parsed program.
