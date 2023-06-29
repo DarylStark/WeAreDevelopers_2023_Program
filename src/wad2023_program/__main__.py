@@ -63,6 +63,7 @@ def start(
         sort: SortField = SortField.START_TIME,
         in_title: str = '',
         in_speaker: str = '',
+        in_description: str = '',
         stage: str = '',
         output: DataOutput = DataOutput.TABLE,
         cache: bool = True
@@ -75,6 +76,7 @@ def start(
         sort: the field on what to sort.
         in_title: filter on words in the title.
         in_speaker: filter on words in the speakers.
+        in_description: filter on words in the description.
         stage: specify a specific stage.
         output: specifies what kind of output the user wants.
         cache: specifies if the cache has to be used.
@@ -94,6 +96,9 @@ def start(
     if len(in_speaker) > 0:
         program = list(filter(lambda session: in_speaker.lower()
                               in session.speaker.lower(), program))
+    if len(in_description) > 0:
+        program = list(filter(lambda session: in_description.lower()
+                              in session.description.lower(), program))
     if len(stage) > 0:
         program = list(filter(lambda session:
                               session.stage_name.lower() == stage.lower(),
