@@ -4,7 +4,7 @@ build-backend = 'setuptools.build_meta'
 
 [project]
 name = "wad2023-program"
-version = "1.2.0-post"
+version = "1.2.0"
 description = "Script to retrieve the program for WeAreDevelopers 2023 conference"
 readme = "README.md"
 authors = [{ name = "Daryl Stark", email = "daryl@dstark.nl" }]
@@ -21,7 +21,7 @@ dependencies = [
     "python-dateutil >= 2.8.0",
     "rich >= 13.4.0",
     "typer >= 0.9.0",
-    "pytz >= 2023.3"
+    "pytz >= 2023.3",
 ]
 requires-python = ">=3.9"
 
@@ -44,7 +44,7 @@ repository = "https://github.com/DarylStark/WeAreDevelopers_2023_Program"
 wad23 = "wad2023_program.__main__:main"
 
 [tool.bumpver]
-current_version = "1.2.0-post"
+current_version = "1.2.0"
 version_pattern = "MAJOR.MINOR.PATCH[-TAG]"
 commit_message = "Version {new_version}"
 commit = true
@@ -57,6 +57,4 @@ push = false
 
 [tool.pytest.ini_options]
 pythonpath = "./src/"
-testpaths = [
-    "tests"
-]
+testpaths = ["tests"]
