@@ -10,4 +10,7 @@ extension-pkg-whitelist=pydantic
 # classes, it get's triggered a lot. We disabled it because we know we are
 # using classes with little to no methods. More information about this:
 # https://pylint.readthedocs.io/en/latest/user_guide/messages/refactor/too-few-public-methods.html
-disable=too-few-public-methods
+#
+# We also disable `too-many-arguments`, since it was triggered on the `start`
+# function in the `__main__` module.
+disable=too-few-public-methods,too-many-arguments

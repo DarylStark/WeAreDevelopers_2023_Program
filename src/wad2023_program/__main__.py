@@ -53,6 +53,7 @@ class DataOutput(str, Enum):
         TABLE: display as table.
         CSV: display as CSV.
     """
+
     TABLE = 'table'
     CSV = 'csv'
 
@@ -75,7 +76,7 @@ def start(
         in_speaker: filter on words in the speakers.
         stage: specify a specific stage.
         output: specifies what kind of output the user wants.
-        from_cache: specifies if the cache has to be used.
+        cache: specifies if the cache has to be used.
     """
     # Get the program
     program = get_program(cache=cache)
@@ -129,8 +130,8 @@ def start(
         for item in program:
             console.print(
                 f'"{item.start_time:%Y-%m-%d}";"{item.start_time:%H:%M:%S}";' +
-                f'"{item.end_time:%H:%M:%S}";"{item.stage_name}";"{item.title}";' +
-                f'"{item.speaker}"')
+                f'"{item.end_time:%H:%M:%S}";"{item.stage_name}";' +
+                f'"{item.title}";"{item.speaker}"')
 
 
 def main() -> None:
