@@ -132,7 +132,8 @@ def start(
         console.print(table)
 
     if output == DataOutput.CSV:
-        console.print('"Date";"Start";"End";"Stage";"Title";"Speakers"')
+        console.print(
+            '"Date";"Start";"End";"Stage";"Title";"Description";"Speakers"')
         for item in program:
             console.print(
                 f'"{item.start_time_berlin:%Y-%m-%d}";' +
@@ -140,6 +141,7 @@ def start(
                 f'"{item.end_time_berlin:%H:%M:%S}";' +
                 f'"{item.stage_name}";' +
                 f'"{item.title}";' +
+                f'"{item.description}";' +
                 f'"{item.speaker}"')
 
 
