@@ -19,8 +19,9 @@ The script has a few command line arguments you can use to sort and filter the l
 -   `--sort=<sort_field>`: specify a field to sort on. Can be `start`, `end`, `title`, `speaker` or `stage`.
 -   `--in-title=<text>`: shows only session with a specific word in the title field. For example, the command line argument `--in-title=python` will only display sessions with the word Python in it.
 -   `--in-speaker=<text>`: shows only sessions with a specific word in the speaker field.
+-   `--in-description=<text>`: shows only sessions with a specific word in the description field.
 -   `--stage=<stage_name>`: filters on stage. The stage has to match exactly, like `--stage="Stage 2"`, for instance.
--   `--output=<output_format>`: let's you specify a output format. Can be either `table` (default), or `csv` for CSV output.
+-   `--output=<output_format>`: let's you specify a output format. Can be either `table` (default), `csv` for CSV output or `details` for detailed output. The detailed output will also display the description.
 -   `--cache` and `--no-cache`: specifies if the script should use the cache. By default, it uses the cache file, but if you want to skip that, you can specify `--no-cache`. Be warned though: do _not_ flood the webserver of Sessionize with requests!
 
 ## Configuration
