@@ -134,16 +134,17 @@ def start(
         console.print(table)
 
     if output == DataOutput.CSV:
-        console.print(
+        print(
             '"Date";"Start";"End";"Stage";"Title";"Description";"Speakers"')
         for item in program:
-            console.print(
+            description = item.description.replace('"', '\\"')
+            print(
                 f'"{item.start_time_berlin:%Y-%m-%d}";' +
                 f'"{item.start_time_berlin:%H:%M:%S}";' +
                 f'"{item.end_time_berlin:%H:%M:%S}";' +
                 f'"{item.stage_name}";' +
                 f'"{item.title}";' +
-                f'"{item.description}";' +
+                f'"{description}";' +
                 f'"{item.speaker}"')
 
     if output == DataOutput.DETAILS:
