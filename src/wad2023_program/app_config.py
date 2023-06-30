@@ -16,6 +16,6 @@ class AppConfig(BaseSettings):
         program_params: the params for the URL.
     """
 
-    cache_file: str = '~/.cache/program.html'
-    program_url: str = 'https://sessionize.com/api/v2/tx3wi18f/view/Sessions'
-    program_params: dict = {'under': True}
+    cache_dir: str = '~/.cache/program.html'
+    program_id: str = 'tx3wi18f'
+    workshops_id: str = 'txhel6oq'
