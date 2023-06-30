@@ -13,8 +13,6 @@ from rich.panel import Panel
 
 from .program import get_program
 
-import csv
-
 
 class SortField(str, Enum):
     """The field to sort on.
