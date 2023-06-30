@@ -105,8 +105,8 @@ def start(
                               in session.description.lower(), program))
     if len(find) > 0:
         program = list(filter(lambda session:
-                              find in session.description.lower() or
-                              find in session.title.lower(),
+                              find.lower() in session.description.lower() or
+                              find.lower() in session.title.lower(),
                               program))
     if len(stage) > 0:
         program = list(filter(lambda session:
