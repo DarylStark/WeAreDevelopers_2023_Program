@@ -4,6 +4,7 @@ Contains the main script for the WAD2023 applican.
 """
 
 from enum import Enum
+from pytest import Session
 
 import typer
 from rich import box
@@ -11,7 +12,8 @@ from rich.console import Console, Group
 from rich.table import Table
 from rich.panel import Panel
 
-from .program import get_program
+from .sessionize_parser import SessionizeParser
+from .app_config import AppConfig
 
 
 class SortField(str, Enum):
@@ -85,8 +87,25 @@ def start(
         output: specifies what kind of output the user wants.
         cache: specifies if the cache has to be used.
     """
-    # Get the program
-    program = get_program(cache=cache)
+
+    # Configuration
+    config = AppConfig()
+
+    # Get the sessions
+    sessions = SessionizeParser(config.program_id, config.cache_dir)
+    sessions.update(cache)
+
+    # Get the workshops
+    workshops = SessionizeParser(config.workshops_id, config.cache_dir)
+    workshops.update(cache)
+
+    # Set the program
+    program: list[Session] = []
+
+    if sessions.sessions is not None:
+        program += sessions.sessions
+    if workshops.sessions is not None:
+        program += workshops.sessions
 
     # Sort the program. We always sort on start time first, before sorting on
     # the column given by the user
