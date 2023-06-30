@@ -66,6 +66,7 @@ def start(
         in_title: str = '',
         in_speaker: str = '',
         in_description: str = '',
+        find: str = '',
         stage: str = '',
         output: DataOutput = DataOutput.TABLE,
         cache: bool = True
@@ -79,6 +80,7 @@ def start(
         in_title: filter on words in the title.
         in_speaker: filter on words in the speakers.
         in_description: filter on words in the description.
+        find: filter on words in the description _or_ in the title.
         stage: specify a specific stage.
         output: specifies what kind of output the user wants.
         cache: specifies if the cache has to be used.
@@ -101,6 +103,11 @@ def start(
     if len(in_description) > 0:
         program = list(filter(lambda session: in_description.lower()
                               in session.description.lower(), program))
+    if len(find) > 0:
+        program = list(filter(lambda session:
+                              find in session.description.lower() or
+                              find in session.title.lower(),
+                              program))
     if len(stage) > 0:
         program = list(filter(lambda session:
                               session.stage_name.lower() == stage.lower(),
