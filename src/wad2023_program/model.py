@@ -51,8 +51,11 @@ class Speaker(Model):
         name: the name of the speaker.
     """
 
-    uid: str
-    name: str
+    uid: str = ''
+    name: str = ''
+    tagline: str = ''
+    bio: str = ''
+    links: dict[str, str] = {}
 
 
 class Stage(Model):

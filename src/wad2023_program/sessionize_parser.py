@@ -241,7 +241,58 @@ class SessionizeParser:
             self.sessions.append(session_object)
 
     def parse_speakers_html(self) -> None:
-        pass
+        """Parse the HTML for the speakers.
+
+        Parses the speakers from the HTML returned by the webpage or the cache.
+        Saves it in the `speakers` attribute of the object.
+
+        Raises:
+            HTMLNotDownloadedException: when the HTML for the speakers page has
+                not been downloaded yet.
+        """
+        if self.cache['speakers'] is None:
+            raise HTMLNotDownloadedException('HTML for the speakers is not' +
+                                             'downloaded yet')
+
+        speakers_html = self.cache['speakers']
+        self.speakers = []
+
+        # Parse the HTML
+        soup = BeautifulSoup(speakers_html, 'html.parser')
+        speaker_list = soup.find_all('ul', {'class': 'sz-speakers--list'})
+        speakers = speaker_list[0].find_all(
+            'li', {'class': 'sz-speaker'})
+
+        # Loop through the speakers and create the correct objects
+        for speaker in speakers:
+            # Create a Speaker object
+            speaker_object = Speaker()
+
+            # Get the UID for this speaker
+            speaker_object.uid = speaker['data-speakerid']
+
+            # Get the name and tagline
+            speaker_object.name = speaker.find_all('h3')[0].text.strip()
+            speaker_object.tagline = speaker.find_all('h4')[0].text.strip()
+
+            # Get the speaker bio
+            bio = speaker.find_all(
+                'p', {'class': 'sz-speaker__bio'})
+            if len(bio) == 1:
+                speaker_object.bio = bio[0].text.strip()
+
+            # Get the links for the speaker
+            links = speaker.find_all('ul', {'class': 'sz-speaker__links'})
+            try:
+                for link in links[0].find_all('li'):
+                    link_tag = link.find_all('a')
+                    speaker_object.links.update(
+                        {link_tag[0]['title']: link_tag[0]['href']}
+                    )
+            except IndexError:
+                speaker_object.links = {}
+
+            self.speakers.append(speaker_object)
 
     def update(self, cache: bool = True) -> None:
         """Update the sessions and speakers.
