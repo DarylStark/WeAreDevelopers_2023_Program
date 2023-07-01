@@ -179,6 +179,7 @@ def start(
             table.add_column('Field')
             table.add_column('Information')
             table.add_row('Title', item.title)
+            table.add_row('Session ID', str(item.id))
             table.add_row(
                 'Date', (f'{item.start_time_berlin:%Y-%m-%d} ' +
                          f'({item.start_time_berlin:%H:%M} - ' +

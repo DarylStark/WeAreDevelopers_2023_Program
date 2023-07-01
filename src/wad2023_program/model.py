@@ -86,6 +86,7 @@ class Session(Model):
         tags: a list with tags.
     """
 
+    id: int = 0
     title: str = ''
     stage: Stage = Stage()
     speakers: list[Speaker] = []

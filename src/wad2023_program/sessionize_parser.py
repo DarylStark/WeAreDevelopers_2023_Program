@@ -205,6 +205,9 @@ class SessionizeParser:
             # Create a new session object
             session_object = Session()
 
+            # Get the session ID
+            session_object.id = int(session['data-sessionid'])
+
             # Get the title
             session_object.title = session.find_all('h3')[0].text.strip()
 
