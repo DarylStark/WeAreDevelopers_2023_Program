@@ -16,6 +16,6 @@ class AppConfig(BaseSettings):
         program_params: the params for the URL.
     """
 
-    cache_dir: str = '~/.cache/program.html'
+    cache_dir: str = '~/.cache/wad2023/'
     program_id: str = 'tx3wi18f'
     workshops_id: str = 'txhel6oq'
