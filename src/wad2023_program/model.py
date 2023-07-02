@@ -6,7 +6,7 @@ import re
 from datetime import datetime
 
 import pytz
-from pydantic import BaseModel
+from sqlmodel import SQLModel
 
 
 def to_timezone(datetime_utc: datetime, timezone: str) -> datetime:
@@ -23,7 +23,7 @@ def to_timezone(datetime_utc: datetime, timezone: str) -> datetime:
     return datetime_utc.replace(tzinfo=pytz.utc).astimezone(tz=new_timezone)
 
 
-class Model(BaseModel):
+class Model(SQLModel):
     """Base model for all models.
 
     Contains the main attributes for Model classes.
