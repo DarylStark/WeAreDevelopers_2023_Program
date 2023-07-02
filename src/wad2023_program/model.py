@@ -56,6 +56,7 @@ class Speaker(Model):
     tagline: str = ''
     bio: str = ''
     links: dict[str, str] = {}
+    img_url: str = ''
 
 
 class Stage(Model):

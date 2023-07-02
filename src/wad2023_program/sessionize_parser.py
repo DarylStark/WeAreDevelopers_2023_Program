@@ -274,6 +274,14 @@ class SessionizeParser:
             # Get the UID for this speaker
             speaker_object.uid = speaker['data-speakerid']
 
+            # Get the image for the speaker
+            image_objects = speaker.find_all('img')
+            if len(image_objects) == 1:
+                try:
+                    speaker_object.img_url = image_objects[0]['src']
+                except KeyError:
+                    speaker_object.img_url = ''
+
             # Get the name and tagline
             speaker_object.name = speaker.find_all('h3')[0].text.strip()
             speaker_object.tagline = speaker.find_all('h4')[0].text.strip()
