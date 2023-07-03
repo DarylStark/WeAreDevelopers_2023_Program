@@ -47,13 +47,36 @@ class SessionSpeakerLink(Model, table=True):
 
     Attributes:
         session_id: the id for the session.
-        speaker_id: the uid for the speaker.
+        speaker_id: the id for the speaker.
     """
 
     session_id: int | None = Field(
         default=None, foreign_key='sessions.id', primary_key=True)
     speaker_id: int | None = Field(
-        default=None, foreign_key='speakers.uid', primary_key=True)
+        default=None, foreign_key='speakers.id', primary_key=True)
+
+
+class SpeakerLink(Model, table=True):
+    """Model for a link for a speaker.
+
+    Class with the attributes for a link that is connected to a speaker.
+
+    Attributes:
+        id: the ID of the link.
+        name: the name of the link.
+        url: the URL of the link.
+        speaker: the ID of the speaker
+    """
+
+    __tablename__: str = 'speaker_links'  # type: ignore
+
+    id: int = Field(default=0, primary_key=True)
+    name: str
+    url: str
+    speaker_id: int | None = Field(default=None, foreign_key='speakers.id')
+
+    # Relationships
+    speaker: 'Speaker' = Relationship(back_populates='links')
 
 
 class Speaker(Model, table=True):
@@ -62,22 +85,22 @@ class Speaker(Model, table=True):
     Class with the attributes for a speaker.
 
     Attributes:
-        uid: the ID of the speaker.
+        id: the ID of the speaker.
         name: the name of the speaker.
     """
 
     __tablename__: str = 'speakers'  # type: ignore
 
-    uid: str = Field(default='', primary_key=True)
+    id: str = Field(default='', primary_key=True)
     name: str = ''
     tagline: str = ''
     bio: str = ''
-    links: dict[str, str] = {}
     img_url: str = ''
 
     # Relationships
     sessions: list['Session'] = Relationship(
         back_populates="speakers", link_model=SessionSpeakerLink)
+    links: list[SpeakerLink] = Relationship(back_populates='speaker')
 
 
 class Stage(Model, table=True):
@@ -86,7 +109,7 @@ class Stage(Model, table=True):
     Class with the attributes for a stage.
 
     Attributes:
-        uid: the ID of the stage.
+        id: the ID of the stage.
         name: the name of the stage.
     """
 
@@ -119,11 +142,11 @@ class Session(Model, table=True):
     title: str = ''
     start_time: datetime = datetime.now()
     end_time: datetime = datetime.now()
-    tags: list[str] = []
     description: str = ''
+    stage_id: int | None = Field(default=None, foreign_key='stages.id')
 
     # Relationships
-    stage: Stage = Relationship(back_populates='sessions')
+    stage: int = Relationship(back_populates='sessions')
     speakers: list[Speaker] = Relationship(
         back_populates="sessions", link_model=SessionSpeakerLink)
 
