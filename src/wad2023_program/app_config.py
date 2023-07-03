@@ -19,3 +19,4 @@ class AppConfig(BaseSettings):
     cache_dir: str = '~/.cache/wad2023/'
     program_id: str = 'tx3wi18f'
     workshops_id: str = 'txhel6oq'
+    db_connection_str: str = 'sqlite:///:memory:'

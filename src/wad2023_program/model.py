@@ -2,11 +2,10 @@
 
 Contains the models for the application.
 """
-import re
 from datetime import datetime
 
 import pytz
-from sqlmodel import SQLModel
+from sqlmodel import SQLModel, Field, Relationship
 
 
 def to_timezone(datetime_utc: datetime, timezone: str) -> datetime:
@@ -41,7 +40,23 @@ class Model(SQLModel):
         validate_assignment = True
 
 
-class Speaker(Model):
+class SessionSpeakerLink(Model, table=True):
+    """Connection class for sessions and speakers.
+
+    Connects sessions and speakers to each-other in a many-to-many model.
+
+    Attributes:
+        session_id: the id for the session.
+        speaker_id: the uid for the speaker.
+    """
+
+    session_id: int | None = Field(
+        default=None, foreign_key='sessions.id', primary_key=True)
+    speaker_id: int | None = Field(
+        default=None, foreign_key='speakers.uid', primary_key=True)
+
+
+class Speaker(Model, table=True):
     """Model for a speaker.
 
     Class with the attributes for a speaker.
@@ -51,15 +66,21 @@ class Speaker(Model):
         name: the name of the speaker.
     """
 
-    uid: str = ''
+    __tablename__: str = 'speakers'  # type: ignore
+
+    uid: str = Field(default='', primary_key=True)
     name: str = ''
     tagline: str = ''
     bio: str = ''
     links: dict[str, str] = {}
     img_url: str = ''
 
+    # Relationships
+    sessions: list['Session'] = Relationship(
+        back_populates="speakers", link_model=SessionSpeakerLink)
 
-class Stage(Model):
+
+class Stage(Model, table=True):
     """Model for a stage.
 
     Class with the attributes for a stage.
@@ -69,11 +90,16 @@ class Stage(Model):
         name: the name of the stage.
     """
 
-    id: int = 0
+    __tablename__: str = 'stages'  # type: ignore
+
+    id: int = Field(default=0, primary_key=True)
     name: str = ''
 
+    # Relationships
+    sessions: list['Session'] = Relationship(back_populates='stage')
 
-class Session(Model):
+
+class Session(Model, table=True):
     """Model for a session.
 
     Class with the attributes for a session.
@@ -87,39 +113,19 @@ class Session(Model):
         tags: a list with tags.
     """
 
-    id: int = 0
+    __tablename__: str = 'sessions'  # type: ignore
+
+    id: int = Field(default=0, primary_key=True)
     title: str = ''
-    stage: Stage = Stage()
-    speakers: list[Speaker] = []
     start_time: datetime = datetime.now()
     end_time: datetime = datetime.now()
     tags: list[str] = []
     description: str = ''
 
-    @property
-    def speaker(self) -> str:
-        """Get the speaker name.
-
-        Returns the speaker name as a string. Can be useful when sorting a list
-        of sessions.
-
-        Returns:
-            The speaker name as a string.
-        """
-        return ', '.join([speaker.name for speaker in self.speakers])
-
-    @property
-    def stage_name(self) -> str:
-        """Get the stage name.
-
-        Returns the name of the stage as a string. The API for the program adds
-        a number to the stage. We filter this out.
-
-        Returns:
-            The name of the stage.
-        """
-        stage_name = re.findall(r'^[A-Za-z0-9\ ]+', self.stage.name)
-        return stage_name[0].strip()
+    # Relationships
+    stage: Stage = Relationship(back_populates='sessions')
+    speakers: list[Speaker] = Relationship(
+        back_populates="sessions", link_model=SessionSpeakerLink)
 
     @property
     def start_time_berlin(self) -> datetime:
