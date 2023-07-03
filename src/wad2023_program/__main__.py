@@ -7,6 +7,8 @@ from typer import Typer
 from .app_config import AppConfig
 from .database import get_db_engine, create_tables
 
+from .model import *
+
 # Create the Typer app
 app = Typer(name='WeAreDevelopers 2023 Conference')
 
@@ -16,7 +18,7 @@ config = AppConfig()
 
 @app.command(name='sync', help='Synchronize the database')
 def sync() -> None:
-    """Function to synchronize the database.
+    """Synchronize the database.
 
     Retrieves the sessions from the Sessionize API and updates the local
     database.
@@ -31,7 +33,7 @@ def sync() -> None:
 
 @app.command(name='list', help='List sessions')
 def list_sessions() -> None:
-    """Function ot list a subset or all of the sessions.
+    """List a subset or all of the sessions.
 
     Displays a list of all sessions, or filters the sessions based on given
     criteria.
