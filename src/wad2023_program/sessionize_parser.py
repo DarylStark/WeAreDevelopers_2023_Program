@@ -206,7 +206,7 @@ class SessionizeParser:
             session_object = {}
 
             # Get the session ID
-            session_object['id'] = int(session['data-sessionid'])
+            session_object['uid'] = int(session['data-sessionid'])
 
             # Get the title
             session_object['title'] = session.find_all('h3')[0].text.strip()
@@ -220,7 +220,7 @@ class SessionizeParser:
             # Get the stage
             stage = session.find_all('div', {'class': 'sz-session__room'})[0]
             session_object['stage'] = {
-                'id': stage['data-roomid'],
+                'uid': stage['data-roomid'],
                 'name': stage.text
             }
 

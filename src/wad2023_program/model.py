@@ -70,7 +70,7 @@ class SpeakerLink(Model, table=True):
 
     __tablename__: str = 'speaker_links'  # type: ignore
 
-    id: int = Field(default=0, primary_key=True)
+    id: int | None = Field(default=None, primary_key=True)
     name: str
     url: str
     speaker_id: int | None = Field(default=None, foreign_key='speakers.id')
@@ -86,16 +86,27 @@ class Speaker(Model, table=True):
 
     Attributes:
         id: the ID of the speaker.
+        uid: the UID of the speaker.
         name: the name of the speaker.
+        tagline: the tagline for the speaker.
+        bio: the biography of the speaker.
+        img_url: a image URL for the speaker.
+        favourite: if the speaker is a favourite.
+        creation: the datetime of the object creation.
+        updated: the datetime of the object update.
     """
 
     __tablename__: str = 'speakers'  # type: ignore
 
-    id: str = Field(default='', primary_key=True)
+    id: int | None = Field(default=None, primary_key=True)
+    uid: str = ''
     name: str = ''
     tagline: str = ''
     bio: str = ''
     img_url: str = ''
+    favourite: bool = False
+    creation: datetime = Field(default_factory=datetime.now)
+    update: datetime = Field(default_factory=datetime.now)
 
     # Relationships
     sessions: list['Session'] = Relationship(
@@ -110,12 +121,14 @@ class Stage(Model, table=True):
 
     Attributes:
         id: the ID of the stage.
+        uid: the UID of the object.
         name: the name of the stage.
     """
 
     __tablename__: str = 'stages'  # type: ignore
 
-    id: int = Field(default=0, primary_key=True)
+    id: int | None = Field(default=None, primary_key=True)
+    uid: int = 0
     name: str = ''
 
     # Relationships
@@ -128,25 +141,34 @@ class Session(Model, table=True):
     Class with the attributes for a session.
 
     Attributes:
+        id: the unique ID of the object.
+        uid: the UID of the object.
         title: the title of the session.
         stage: the stage where the session is hold.
         speakers: a list with speakers for the session.
         start_time: when the session starts.
         end_time: when the session ends
         tags: a list with tags.
+        favourite: if the speaker is a favourite.
+        creation: the datetime of the object creation.
+        updated: the datetime of the object update.
     """
 
     __tablename__: str = 'sessions'  # type: ignore
 
-    id: int = Field(default=0, primary_key=True)
+    id: int | None = Field(default=None, primary_key=True)
+    uid: int = 0
     title: str = ''
     start_time: datetime = datetime.now()
     end_time: datetime = datetime.now()
     description: str = ''
     stage_id: int | None = Field(default=None, foreign_key='stages.id')
+    favourite: bool = False
+    creation: datetime = Field(default_factory=datetime.now)
+    update: datetime = Field(default_factory=datetime.now)
 
     # Relationships
-    stage: int = Relationship(back_populates='sessions')
+    stage: Stage = Relationship(back_populates='sessions')
     speakers: list[Speaker] = Relationship(
         back_populates="sessions", link_model=SessionSpeakerLink)
 
