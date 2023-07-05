@@ -42,8 +42,8 @@ class SessionizeParser:
         self.cache_dir = expanduser(cache_dir)
 
         # Sessions and speakers
-        self.sessions: list[Session] | None = None
-        self.speakers: list[Speaker] | None = None
+        self.sessions: list[dict[str, str | int | list]] | None = None
+        self.speakers: list[dict[str, str | int | list]] | None = None
 
         # Cache for the HTML
         self.cache: dict[str, str | None] = {
@@ -202,43 +202,45 @@ class SessionizeParser:
 
         # Loop through the session and create the correct objects
         for session in sessions:
-            # Create a new session object
-            session_object = Session()
+            # Create a new dict for the sessions
+            session_object = {}
 
             # Get the session ID
-            session_object.id = int(session['data-sessionid'])
+            session_object['id'] = int(session['data-sessionid'])
 
             # Get the title
-            session_object.title = session.find_all('h3')[0].text.strip()
+            session_object['title'] = session.find_all('h3')[0].text.strip()
 
             # Get the description
             description_tag = session.find_all(
                 'p', {'class': 'sz-session__description'})
             if len(description_tag) == 1:
-                session_object.description = description_tag[0].text.strip()
+                session_object['description'] = description_tag[0].text.strip()
 
             # Get the stage
             stage = session.find_all('div', {'class': 'sz-session__room'})[0]
-            session_object.stage = Stage(
-                id=stage['data-roomid'],
-                name=stage.text
-            )
+            session_object['stage'] = {
+                'id': stage['data-roomid'],
+                'name': stage.text
+            }
 
             # Get the speakers
             speakers = session.find_all(
                 'ul', {'class': 'sz-session__speakers'})
+            session_object['speakers'] = []
             for speaker in speakers[0].find_all('li'):
-                speaker_object = Speaker(
-                    uid=speaker['data-speakerid'],
-                    name=speaker.text.strip())
-                session_object.speakers.append(speaker_object)
+                speaker_object = {
+                    'uid': speaker['data-speakerid'],
+                    'name': speaker.text.strip()
+                }
+                session_object['speakers'].append(speaker_object)
 
             # Get the session times
             session_time = session.find_all(
                 'div', {'class': 'sz-session__time'})[0]
             time_attribute = session_time['data-sztz'].split('|')
-            session_object.start_time = parser.parse(time_attribute[2])
-            session_object.end_time = parser.parse(time_attribute[3])
+            session_object['start_time'] = parser.parse(time_attribute[2])
+            session_object['end_time'] = parser.parse(time_attribute[3])
 
             # Append the session to the list
             self.sessions.append(session_object)
@@ -269,39 +271,40 @@ class SessionizeParser:
         # Loop through the speakers and create the correct objects
         for speaker in speakers:
             # Create a Speaker object
-            speaker_object = Speaker()
+            speaker_object = {}
 
             # Get the UID for this speaker
-            speaker_object.uid = speaker['data-speakerid']
+            speaker_object['uid'] = speaker['data-speakerid']
 
             # Get the image for the speaker
             image_objects = speaker.find_all('img')
             if len(image_objects) == 1:
                 try:
-                    speaker_object.img_url = image_objects[0]['src']
+                    speaker_object['img_url'] = image_objects[0]['src']
                 except KeyError:
-                    speaker_object.img_url = ''
+                    speaker_object['img_url'] = ''
 
             # Get the name and tagline
-            speaker_object.name = speaker.find_all('h3')[0].text.strip()
-            speaker_object.tagline = speaker.find_all('h4')[0].text.strip()
+            speaker_object['name'] = speaker.find_all('h3')[0].text.strip()
+            speaker_object['tagline'] = speaker.find_all('h4')[0].text.strip()
 
             # Get the speaker bio
             bio = speaker.find_all(
                 'p', {'class': 'sz-speaker__bio'})
             if len(bio) == 1:
-                speaker_object.bio = bio[0].text.strip()
+                speaker_object['bio'] = bio[0].text.strip()
 
             # Get the links for the speaker
             links = speaker.find_all('ul', {'class': 'sz-speaker__links'})
+            speaker_object['links'] = {}
             try:
                 for link in links[0].find_all('li'):
                     link_tag = link.find_all('a')
-                    speaker_object.links.update(
+                    speaker_object['links'].update(
                         {link_tag[0]['title']: link_tag[0]['href']}
                     )
             except IndexError:
-                speaker_object.links = {}
+                pass
 
             self.speakers.append(speaker_object)
 
