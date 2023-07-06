@@ -38,9 +38,21 @@ class SessionTypeCLI(str, Enum):
 
     Specifies the types of session to filter on.
     """
+
     ALL = 'all'
     SESSION = 'session'
     WORKSHOP = 'workshop'
+
+
+class OutputType(str, Enum):
+    """The choosable output.
+
+    Specifies what output modes are choosable.
+    """
+
+    TABLE = 'table'
+    CSV = 'csv'
+    DETAILS = 'details'
 
 
 @app.command(name='sync', help='Synchronize the database')
@@ -168,6 +180,7 @@ def list_sessions(
     description: str | None = None,
     find: str | None = None,
     only_favourite: bool | None = None,
+    output: OutputType = OutputType.TABLE
 ) -> None:
     """List a subset or all of the sessions.
 
@@ -207,29 +220,48 @@ def list_sessions(
         # Get the selected sessions
         all_sessions = session.exec(statement).all()
 
-        # Display the sessions
-        console = Console()
-        table = Table(box=box.HORIZONTALS)
-        table.add_column('*')
-        table.add_column('Type')
-        table.add_column('Date')
-        table.add_column('Start')
-        table.add_column('End')
-        table.add_column('Stage')
-        table.add_column('Title')
-        table.add_column('Speakers')
-        for sess in all_sessions:
-            table.add_row(
-                '*' if sess.favourite else '',
-                sess.session_type.capitalize(),
-                f'{sess.start_time_berlin:%Y-%m-%d}',
-                f'{sess.start_time_berlin:%H:%M}',
-                f'{sess.end_time_berlin:%H:%M}',
-                sess.stage.name,
-                sess.title,
-                ', '.join([speaker.name for speaker in sess.speakers])
-            )
-        console.print(table)
+        if output == OutputType.TABLE:
+            # Display the sessions
+            console = Console()
+            table = Table(box=box.HORIZONTALS)
+            table.add_column('*')
+            table.add_column('Type')
+            table.add_column('Date')
+            table.add_column('Start')
+            table.add_column('End')
+            table.add_column('Stage')
+            table.add_column('Title')
+            table.add_column('Speakers')
+            for sess in all_sessions:
+                table.add_row(
+                    '*' if sess.favourite else '',
+                    sess.session_type.capitalize(),
+                    f'{sess.start_time_berlin:%Y-%m-%d}',
+                    f'{sess.start_time_berlin:%H:%M}',
+                    f'{sess.end_time_berlin:%H:%M}',
+                    sess.stage.name,
+                    sess.title,
+                    ', '.join([speaker.name for speaker in sess.speakers])
+                )
+            console.print(table)
+
+        if output == OutputType.CSV:
+            columns = ('Favourite', 'Type', 'Date', 'Start',
+                       'End', 'Stage', 'Title', 'Speakers')
+            print(';'.join([f'"{column}"' for column in columns]))
+            for sess in all_sessions:
+                row = ['*' if sess.favourite else '',
+                       sess.session_type.capitalize(),
+                       f'{sess.start_time_berlin:%Y-%m-%d}',
+                       f'{sess.start_time_berlin:%H:%M}',
+                       f'{sess.end_time_berlin:%H:%M}',
+                       sess.stage.name,
+                       sess.title,
+                       ', '.join([speaker.name for speaker in sess.speakers])]
+                print(';'.join([f'"{row_data}"' for row_data in row]))
+
+        if output == OutputType.DETAILS:
+            print('---')
 
 
 if __name__ == '__main__':
