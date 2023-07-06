@@ -38,6 +38,7 @@ class SessionTypeCLI(str, Enum):
     SESSION = 'session'
     WORKSHOP = 'workshop'
 
+
 @app.command(name='sync', help='Synchronize the database')
 def sync() -> None:
     """Synchronize the database.
@@ -158,12 +159,12 @@ def sync() -> None:
 
 @app.command(name='sessions', help='List sessions')
 def list_sessions(
-        session_type: SessionTypeCLI = SessionTypeCLI.ALL,
-        title: str | None = None,
-        description: str | None = None,
-        find: str | None = None,
-        only_favourite: bool | None = None,
-    ) -> None:
+    session_type: SessionTypeCLI = SessionTypeCLI.ALL,
+    title: str | None = None,
+    description: str | None = None,
+    find: str | None = None,
+    only_favourite: bool | None = None,
+) -> None:
     """List a subset or all of the sessions.
 
     Displays a list of all sessions, or filters the sessions based on given
@@ -183,17 +184,21 @@ def list_sessions(
 
         # Apply filters
         if session_type == SessionTypeCLI.SESSION:
-            statement = statement.where(Session.session_type == SessionType.SESSION)
+            statement = statement.where(
+                Session.session_type == SessionType.SESSION)
         elif session_type == SessionTypeCLI.WORKSHOP:
-            statement = statement.where(Session.session_type == SessionType.WORKSHOP)
+            statement = statement.where(
+                Session.session_type == SessionType.WORKSHOP)
         if title:
             statement = statement.where(Session.title.ilike(f'%{title}%'))
         if description:
-            statement = statement.where(Session.description.ilike(f'%{description}%'))
+            statement = statement.where(
+                Session.description.ilike(f'%{description}%'))
         if find:
-            statement=statement.where(or_(Session.title.ilike(f'%{find}%'), Session.description.ilike(f'%{find}%')))
+            statement = statement.where(or_(Session.title.ilike(
+                f'%{find}%'), Session.description.ilike(f'%{find}%')))
         if only_favourite is not None:
-            statement=statement.where(Session.favourite==only_favourite)
+            statement = statement.where(Session.favourite == only_favourite)
 
         # Get the selected sessions
         all_sessions = session.exec(statement).all()
@@ -221,6 +226,7 @@ def list_sessions(
                 ', '.join([speaker.name for speaker in sess.speakers])
             )
         console.print(table)
+
 
 if __name__ == '__main__':
     app()
