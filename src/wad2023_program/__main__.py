@@ -7,13 +7,18 @@ from datetime import datetime
 from logging import INFO, basicConfig, getLogger
 
 from sqlmodel import Session as DBSession
-from sqlmodel import select
+from sqlmodel import select, or_
 from typer import Typer
 
 from .app_config import AppConfig
 from .database import create_tables, get_db_engine
-from .model import Session, Speaker, SpeakerLink, Stage
+from .model import Session, Speaker, SpeakerLink, Stage, SessionType
 from .sessionize_parser import SessionizeParser
+
+from enum import Enum
+from rich import box
+from rich.console import Console
+from rich.table import Table
 
 # Create the Typer app
 app = Typer(name='WeAreDevelopers 2023 Conference')
@@ -24,6 +29,14 @@ config = AppConfig()
 # Configure logging
 basicConfig(level=INFO)
 
+# Create a Database Engine
+engine = get_db_engine(config.db_connection_str)
+
+
+class SessionTypeCLI(str, Enum):
+    ALL = 'all'
+    SESSION = 'session'
+    WORKSHOP = 'workshop'
 
 @app.command(name='sync', help='Synchronize the database')
 def sync() -> None:
@@ -34,9 +47,6 @@ def sync() -> None:
     """
     # Create a logger
     logger = getLogger('sync')
-
-    # Create a Database Engine
-    engine = get_db_engine(config.db_connection_str)
 
     # Create the tables. This only creates the tables that don't exist yet, so
     # we can safely execute it.
@@ -146,14 +156,71 @@ def sync() -> None:
         session.commit()
 
 
-@app.command(name='list', help='List sessions')
-def list_sessions() -> None:
+@app.command(name='sessions', help='List sessions')
+def list_sessions(
+        session_type: SessionTypeCLI = SessionTypeCLI.ALL,
+        title: str | None = None,
+        description: str | None = None,
+        find: str | None = None,
+        only_favourite: bool | None = None,
+    ) -> None:
     """List a subset or all of the sessions.
 
     Displays a list of all sessions, or filters the sessions based on given
     criteria.
-    """
 
+    Args:
+        session_type: filter on a specific session type.
+        title: filter on a specific string in the title.
+        description: filter on a specific string in the description.
+        find: search in title and description.
+        only_favourite: display only favourites
+    """
+    # Filter on sessions
+    with DBSession(engine, expire_on_commit=False) as session:
+        # Base statement
+        statement = select(Session).order_by(Session.start_time)
+
+        # Apply filters
+        if session_type == SessionTypeCLI.SESSION:
+            statement = statement.where(Session.session_type == SessionType.SESSION)
+        elif session_type == SessionTypeCLI.WORKSHOP:
+            statement = statement.where(Session.session_type == SessionType.WORKSHOP)
+        if title:
+            statement = statement.where(Session.title.ilike(f'%{title}%'))
+        if description:
+            statement = statement.where(Session.description.ilike(f'%{description}%'))
+        if find:
+            statement=statement.where(or_(Session.title.ilike(f'%{find}%'), Session.description.ilike(f'%{find}%')))
+        if only_favourite is not None:
+            statement=statement.where(Session.favourite==only_favourite)
+
+        # Get the selected sessions
+        all_sessions = session.exec(statement).all()
+
+        # Display the sessions
+        console = Console()
+        table = Table(box=box.HORIZONTALS)
+        table.add_column('*')
+        table.add_column('Type')
+        table.add_column('Date')
+        table.add_column('Start')
+        table.add_column('End')
+        table.add_column('Stage')
+        table.add_column('Title')
+        table.add_column('Speakers')
+        for sess in all_sessions:
+            table.add_row(
+                '*' if sess.favourite else '',
+                sess.session_type.capitalize(),
+                f'{sess.start_time_berlin:%Y-%m-%d}',
+                f'{sess.start_time_berlin:%H:%M}',
+                f'{sess.end_time_berlin:%H:%M}',
+                sess.stage.name,
+                sess.title,
+                ', '.join([speaker.name for speaker in sess.speakers])
+            )
+        console.print(table)
 
 if __name__ == '__main__':
     app()
