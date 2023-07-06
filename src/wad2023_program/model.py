@@ -7,6 +7,8 @@ from datetime import datetime
 import pytz
 from sqlmodel import SQLModel, Field, Relationship
 
+from enum import Enum
+
 
 def to_timezone(datetime_utc: datetime, timezone: str) -> datetime:
     """Convert a UTC time to a specific timezone.
@@ -135,6 +137,20 @@ class Stage(Model, table=True):
     sessions: list['Session'] = Relationship(back_populates='stage')
 
 
+class SessionType(str, Enum):
+    """Model for session-types.
+
+    Can be either `session` or `worshop`, depending on the type of session.
+
+    Attributes:
+        SESSION: the sessions is a normal conference session.
+        WORKSHOP: the session is a workshop.
+    """
+
+    SESSION = 'session'
+    WORKSHOP = 'workshop'
+
+
 class Session(Model, table=True):
     """Model for a session.
 
@@ -143,6 +159,7 @@ class Session(Model, table=True):
     Attributes:
         id: the unique ID of the object.
         uid: the UID of the object.
+        session_type: the session type.
         title: the title of the session.
         stage: the stage where the session is hold.
         speakers: a list with speakers for the session.
@@ -158,6 +175,7 @@ class Session(Model, table=True):
 
     id: int | None = Field(default=None, primary_key=True)
     uid: int = 0
+    session_type: SessionType = 'session'
     title: str = ''
     start_time: datetime = datetime.now()
     end_time: datetime = datetime.now()

@@ -97,8 +97,12 @@ def sync() -> None:
     logger.info('Starting to sync sessions')
     all_sessions = []
     if sessions.sessions:
+        for sess in sessions.sessions:
+            sess['type'] = 'session'
         all_sessions += sessions.sessions
     if workshops.sessions:
+        for sess in workshops.sessions:
+            sess['type'] = 'workshop'
         all_sessions += workshops.sessions
 
     with DBSession(engine, expire_on_commit=False) as session:
@@ -114,6 +118,7 @@ def sync() -> None:
                 session_object.start_time = sess.get('start_time')
                 session_object.end_time = sess.get('end_time', '')
                 session_object.description = sess.get('description', '')
+                session_object.session_type = sess.get('type', 'session')
 
                 # Loop through the speakers
                 for speaker in sess['speakers']:
