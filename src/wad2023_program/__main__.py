@@ -66,15 +66,15 @@ def speaker_text(speaker: Speaker) -> str:
     Returns:
         The format for the speaker.
     """
-    speaker_text = f'\n[yellow][b]{speaker.name}[/b][/yellow]'
+    output_text = f'\n[yellow][b]{speaker.name}[/b][/yellow]'
 
     if len(speaker.tagline) > 0:
-        speaker_text += f'\n[orange][i]{speaker.tagline}[/i][/orange]'
+        output_text += f'\n[orange][i]{speaker.tagline}[/i][/orange]'
 
     if len(speaker.bio) > 0:
-        speaker_text += '\n\n' + speaker.bio
+        output_text += '\n\n' + speaker.bio
 
-    return speaker_text
+    return output_text
 
 
 @app.command(name='sync', help='Synchronize the database')
@@ -94,12 +94,12 @@ def sync() -> None:
     # Get the sessions from Sessionize
     logger.info('Retrieving sessions')
     sessions = SessionizeParser(
-        sessionize_id=config.program_id, cache_dir=config.cache_dir)
+        sessionize_id=config.program_id)
     sessions.update()
 
     logger.info('Retrieving workshops')
     workshops = SessionizeParser(
-        sessionize_id=config.workshops_id, cache_dir=config.cache_dir)
+        sessionize_id=config.workshops_id)
     workshops.update()
 
     # Empty dict for speakers; will come in handy later
@@ -130,6 +130,7 @@ def sync() -> None:
 
                 # Add the links
                 for name, url in speaker['links'].items():
+                    # pylint: disable=no-member
                     speaker_object.links.append(SpeakerLink(
                         name=name,
                         url=url
@@ -156,22 +157,23 @@ def sync() -> None:
 
     with DBSession(engine, expire_on_commit=False) as session:
         for sess in all_sessions:
-            statement = select(Session).where(Session.uid == sess['uid'])
-            result_sessions = session.exec(statement).all()
+            sess_statement = select(Session).where(Session.uid == sess['uid'])
+            result_sessions = session.exec(sess_statement).all()
             if len(result_sessions) != 1:
                 # Speaker is new, add it
                 logger.info('Session "%s" is new, adding it', sess['title'])
                 session_object = Session()
                 session_object.uid = int(sess.get('uid', 0))
                 session_object.title = str(sess.get('title', ''))
-                session_object.start_time = sess.get('start_time')
+                session_object.start_time = sess.get('start_time', '')
                 session_object.end_time = sess.get('end_time', '')
                 session_object.description = sess.get('description', '')
                 session_object.session_type = sess.get('type', 'session')
 
                 # Loop through the speakers
                 for speaker in sess['speakers']:
-                    if speaker['uid'] in speakers_by_uid.keys():
+                    # pylint: disable=no-member
+                    if speaker['uid'] in speakers_by_uid:
                         session_object.speakers.append(
                             speakers_by_uid[speaker['uid']])
                     else:
@@ -230,13 +232,19 @@ def list_sessions(
             statement = statement.where(
                 Session.session_type == SessionType.WORKSHOP)
         if title:
-            statement = statement.where(Session.title.ilike(f'%{title}%'))
-        if description:
+            # pylint: disable=no-member
             statement = statement.where(
-                Session.description.ilike(f'%{description}%'))
+                Session.title.ilike(f'%{title}%'))  # type:ignore
+        if description:
+            # pylint: disable=no-member
+            statement = statement.where(
+                Session.description.ilike(f'%{description}%'))  # type:ignore
         if find:
-            statement = statement.where(or_(Session.title.ilike(
-                f'%{find}%'), Session.description.ilike(f'%{find}%')))
+            # pylint: disable=no-member
+            # type:ignore
+            statement = statement.where(or_(Session.title.ilike(  # type:ignore
+                f'%{find}%'),
+                Session.description.ilike(f'%{find}%')))  # type:ignore
         if only_favourite is not None:
             statement = statement.where(Session.favourite == only_favourite)
 
@@ -297,8 +305,9 @@ def list_sessions(
                              f'{sess.end_time_berlin:%H:%M})'))
                 table.add_row('Stage', sess.stage.name)
 
-                output_parts = [table, sess.description,
-                                '\n[green][b]## Speakers[/b][/green]']
+                output_parts: list[str | Table] = [
+                    table, sess.description,
+                    '\n[green][b]## Speakers[/b][/green]']
 
                 for speaker in sess.speakers:
                     output_parts.append(speaker_text(speaker))

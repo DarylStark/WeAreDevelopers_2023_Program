@@ -3,11 +3,10 @@
 Contains the models for the application.
 """
 from datetime import datetime
+from enum import Enum
 
 import pytz
-from sqlmodel import SQLModel, Field, Relationship
-
-from enum import Enum
+from sqlmodel import Field, Relationship, SQLModel
 
 
 def to_timezone(datetime_utc: datetime, timezone: str) -> datetime:
@@ -175,7 +174,7 @@ class Session(Model, table=True):
 
     id: int | None = Field(default=None, primary_key=True)
     uid: int = 0
-    session_type: SessionType = 'session'
+    session_type: SessionType = SessionType.SESSION
     title: str = ''
     start_time: datetime = datetime.now()
     end_time: datetime = datetime.now()
