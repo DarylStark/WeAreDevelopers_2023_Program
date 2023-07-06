@@ -34,6 +34,10 @@ engine = get_db_engine(config.db_connection_str)
 
 
 class SessionTypeCLI(str, Enum):
+    """Enum for the session types.
+
+    Specifies the types of session to filter on.
+    """
     ALL = 'all'
     SESSION = 'session'
     WORKSHOP = 'workshop'
