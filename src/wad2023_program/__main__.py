@@ -4,21 +4,21 @@ Contains the CLI script for the `wad23` application.
 """
 
 from datetime import datetime
+from enum import Enum
 from logging import INFO, basicConfig, getLogger
 
+from rich import box
+from rich.console import Console, Group
+from rich.panel import Panel
+from rich.table import Table
 from sqlmodel import Session as DBSession
-from sqlmodel import select, or_
+from sqlmodel import or_, select
 from typer import Typer
 
 from .app_config import AppConfig
 from .database import create_tables, get_db_engine
-from .model import Session, Speaker, SpeakerLink, Stage, SessionType
+from .model import Session, SessionType, Speaker, SpeakerLink, Stage
 from .sessionize_parser import SessionizeParser
-
-from enum import Enum
-from rich import box
-from rich.console import Console
-from rich.table import Table
 
 # Create the Typer app
 app = Typer(name='WeAreDevelopers 2023 Conference')
@@ -53,6 +53,28 @@ class OutputType(str, Enum):
     TABLE = 'table'
     CSV = 'csv'
     DETAILS = 'details'
+
+
+def speaker_text(speaker: Speaker) -> str:
+    """Create a text for a speaker.
+
+    Returns a string in a default format for a speaker.
+
+    Args:
+        speaker: the speaker object.
+
+    Returns:
+        The format for the speaker.
+    """
+    speaker_text = f'\n[yellow][b]{speaker.name}[/b][/yellow]'
+
+    if len(speaker.tagline) > 0:
+        speaker_text += f'\n[orange][i]{speaker.tagline}[/i][/orange]'
+
+    if len(speaker.bio) > 0:
+        speaker_text += '\n\n' + speaker.bio
+
+    return speaker_text
 
 
 @app.command(name='sync', help='Synchronize the database')
@@ -261,7 +283,29 @@ def list_sessions(
                 print(';'.join([f'"{row_data}"' for row_data in row]))
 
         if output == OutputType.DETAILS:
-            print('---')
+            console = Console()
+            for sess in all_sessions:
+                table = Table(box=box.MINIMAL, show_header=False)
+                table.add_column('Field')
+                table.add_column('Information')
+                table.add_row('Title', sess.title)
+                table.add_row('Session ID', str(sess.id))
+                table.add_row(
+                    'Date', (f'{sess.start_time_berlin:%Y-%m-%d} ' +
+                             f'({sess.start_time_berlin:%H:%M} - ' +
+                             f'{sess.end_time_berlin:%H:%M})'))
+                table.add_row('Stage', sess.stage.name)
+
+                output_parts = [table, sess.description,
+                                '\n[green][b]## Speakers[/b][/green]']
+
+                for speaker in sess.speakers:
+                    output_parts.append(speaker_text(speaker))
+
+                console.print(
+                    Panel(
+                        Group(*output_parts)
+                    ))
 
 
 if __name__ == '__main__':

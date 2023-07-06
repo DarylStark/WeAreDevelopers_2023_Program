@@ -5,14 +5,16 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Sync database",
+            "name": "Detailed output",
             "type": "python",
             "request": "launch",
             "module": "wad2023_program",
             "console": "integratedTerminal",
             "justMyCode": true,
             "args": [
-                "sync"
+                "sessions",
+                "--output=details",
+                "--find=fireside chat"
             ],
             "cwd": "${workspaceFolder}/src",
             "envFile": "${workspaceFolder}/.environment/dev.env"
