@@ -42,7 +42,7 @@ homepage = "https://github.com/DarylStark/WeAreDevelopers_2023_Program"
 repository = "https://github.com/DarylStark/WeAreDevelopers_2023_Program"
 
 [project.scripts]
-wad23 = "wad2023_program.__main__:main"
+wad23 = "wad2023_program.__main__:app"
 
 [tool.bumpver]
 current_version = "1.3.0-dev"
