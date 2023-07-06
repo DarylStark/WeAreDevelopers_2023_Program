@@ -12,7 +12,6 @@ import requests
 from bs4 import BeautifulSoup
 from dateutil import parser
 
-from .model import Session, Speaker, Stage
 from .exceptions import HTMLNotDownloadedException
 
 
@@ -29,7 +28,7 @@ class SessionizeParser:
     """
 
     def __init__(self, sessionize_id: str, cache_dir: str) -> None:
-        """Initiator for the object.
+        """Set the defaults for the object.
 
         Sets the sessionize ID that is used later to parse the page.
 
@@ -185,7 +184,6 @@ class SessionizeParser:
             HTMLNotDownloadedException: when the HTML for the program page has
                 not been downloaded yet.
         """
-
         # Local variable for the HTML
         if self.cache['program'] is None:
             raise HTMLNotDownloadedException('HTML for the program is not' +

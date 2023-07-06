@@ -214,7 +214,8 @@ def list_sessions(
         title: filter on a specific string in the title.
         description: filter on a specific string in the description.
         find: search in title and description.
-        only_favourite: display only favourites
+        only_favourite: display only favourites.
+        output: the type of output.
     """
     # Filter on sessions
     with DBSession(engine, expire_on_commit=False) as session:
