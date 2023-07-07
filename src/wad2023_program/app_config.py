@@ -18,4 +18,4 @@ class AppConfig(BaseSettings):
 
     program_id: str = 'tx3wi18f'
     workshops_id: str = 'txhel6oq'
-    db_connection_str: str = 'sqlite:///:memory:'
+    db_connection_str: str = 'sqlite:///./wad2023.sqlite'
