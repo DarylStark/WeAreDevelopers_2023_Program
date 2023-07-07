@@ -29,6 +29,13 @@ def speaker_text(speaker: Speaker) -> str:
     if len(speaker.bio) > 0:
         output_text += '\n\n' + speaker.bio
 
+    if len(speaker.links) > 0:
+        output_text += '\n'
+
+    for link in speaker.links:
+        output_text += (f'\n[yellow][b]{link.name}:[/b][/yellow] ' +
+                        f'[green]{link.url}[/green]')
+
     return output_text
 
 
