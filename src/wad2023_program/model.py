@@ -2,11 +2,11 @@
 
 Contains the models for the application.
 """
-import re
 from datetime import datetime
+from enum import Enum
 
 import pytz
-from pydantic import BaseModel
+from sqlmodel import Field, Relationship, SQLModel
 
 
 def to_timezone(datetime_utc: datetime, timezone: str) -> datetime:
@@ -23,7 +23,7 @@ def to_timezone(datetime_utc: datetime, timezone: str) -> datetime:
     return datetime_utc.replace(tzinfo=pytz.utc).astimezone(tz=new_timezone)
 
 
-class Model(BaseModel):
+class Model(SQLModel):
     """Base model for all models.
 
     Contains the main attributes for Model classes.
@@ -41,84 +41,153 @@ class Model(BaseModel):
         validate_assignment = True
 
 
-class Speaker(Model):
+class SessionSpeakerLink(Model, table=True):
+    """Connection class for sessions and speakers.
+
+    Connects sessions and speakers to each-other in a many-to-many model.
+
+    Attributes:
+        session_id: the id for the session.
+        speaker_id: the id for the speaker.
+    """
+
+    session_id: int | None = Field(
+        default=None, foreign_key='sessions.id', primary_key=True)
+    speaker_id: int | None = Field(
+        default=None, foreign_key='speakers.id', primary_key=True)
+
+
+class SpeakerLink(Model, table=True):
+    """Model for a link for a speaker.
+
+    Class with the attributes for a link that is connected to a speaker.
+
+    Attributes:
+        id: the ID of the link.
+        name: the name of the link.
+        url: the URL of the link.
+        speaker: the ID of the speaker
+    """
+
+    __tablename__: str = 'speaker_links'  # type: ignore
+
+    id: int | None = Field(default=None, primary_key=True)
+    name: str
+    url: str
+    speaker_id: int | None = Field(default=None, foreign_key='speakers.id')
+
+    # Relationships
+    speaker: 'Speaker' = Relationship(back_populates='links')
+
+
+class Speaker(Model, table=True):
     """Model for a speaker.
 
     Class with the attributes for a speaker.
 
     Attributes:
-        uid: the ID of the speaker.
+        id: the ID of the speaker.
+        uid: the UID of the speaker.
         name: the name of the speaker.
+        tagline: the tagline for the speaker.
+        bio: the biography of the speaker.
+        img_url: a image URL for the speaker.
+        favourite: if the speaker is a favourite.
+        creation: the datetime of the object creation.
+        updated: the datetime of the object update.
     """
 
+    __tablename__: str = 'speakers'  # type: ignore
+
+    id: int | None = Field(default=None, primary_key=True)
     uid: str = ''
     name: str = ''
     tagline: str = ''
     bio: str = ''
-    links: dict[str, str] = {}
+    img_url: str = ''
+    favourite: bool = False
+    creation: datetime = Field(default_factory=datetime.now)
+    update: datetime = Field(default_factory=datetime.now)
+
+    # Relationships
+    sessions: list['Session'] = Relationship(
+        back_populates="speakers", link_model=SessionSpeakerLink)
+    links: list[SpeakerLink] = Relationship(back_populates='speaker')
 
 
-class Stage(Model):
+class Stage(Model, table=True):
     """Model for a stage.
 
     Class with the attributes for a stage.
 
     Attributes:
-        uid: the ID of the stage.
+        id: the ID of the stage.
+        uid: the UID of the object.
         name: the name of the stage.
     """
 
-    id: int = 0
+    __tablename__: str = 'stages'  # type: ignore
+
+    id: int | None = Field(default=None, primary_key=True)
+    uid: int = 0
     name: str = ''
 
+    # Relationships
+    sessions: list['Session'] = Relationship(back_populates='stage')
 
-class Session(Model):
+
+class SessionType(str, Enum):
+    """Model for session-types.
+
+    Can be either `session` or `worshop`, depending on the type of session.
+
+    Attributes:
+        SESSION: the sessions is a normal conference session.
+        WORKSHOP: the session is a workshop.
+    """
+
+    SESSION = 'session'
+    WORKSHOP = 'workshop'
+
+
+class Session(Model, table=True):
     """Model for a session.
 
     Class with the attributes for a session.
 
     Attributes:
+        id: the unique ID of the object.
+        uid: the UID of the object.
+        session_type: the session type.
         title: the title of the session.
         stage: the stage where the session is hold.
         speakers: a list with speakers for the session.
         start_time: when the session starts.
         end_time: when the session ends
         tags: a list with tags.
+        favourite: if the speaker is a favourite.
+        creation: the datetime of the object creation.
+        updated: the datetime of the object update.
     """
 
-    id: int = 0
+    __tablename__: str = 'sessions'  # type: ignore
+
+    id: int | None = Field(default=None, primary_key=True)
+    uid: int = 0
+    session_type: SessionType = SessionType.SESSION
     title: str = ''
-    stage: Stage = Stage()
-    speakers: list[Speaker] = []
     start_time: datetime = datetime.now()
     end_time: datetime = datetime.now()
-    tags: list[str] = []
     description: str = ''
+    stage_id: int | None = Field(default=None, foreign_key='stages.id')
+    favourite: bool = False
+    creation: datetime = Field(default_factory=datetime.now)
+    update: datetime = Field(default_factory=datetime.now)
 
-    @property
-    def speaker(self) -> str:
-        """Get the speaker name.
-
-        Returns the speaker name as a string. Can be useful when sorting a list
-        of sessions.
-
-        Returns:
-            The speaker name as a string.
-        """
-        return ', '.join([speaker.name for speaker in self.speakers])
-
-    @property
-    def stage_name(self) -> str:
-        """Get the stage name.
-
-        Returns the name of the stage as a string. The API for the program adds
-        a number to the stage. We filter this out.
-
-        Returns:
-            The name of the stage.
-        """
-        stage_name = re.findall(r'^[A-Za-z0-9\ ]+', self.stage.name)
-        return stage_name[0].strip()
+    # Relationships
+    stage: Stage = Relationship(back_populates='sessions')
+    speakers: list[Speaker] = Relationship(
+        back_populates="sessions", link_model=SessionSpeakerLink)
 
     @property
     def start_time_berlin(self) -> datetime:
