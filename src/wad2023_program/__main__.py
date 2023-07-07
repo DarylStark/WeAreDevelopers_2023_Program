@@ -134,6 +134,7 @@ def list_sessions(
         set_as_favourite: set the selected sessions as favourite.
         output: the type of output.
     """
+    # pylint: disable=too-many-branches
     # Filter on sessions
     with DBSession(engine, expire_on_commit=False) as session:
         # Base statement
