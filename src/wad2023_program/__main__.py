@@ -110,6 +110,7 @@ def list_sessions(
     title: str | None = None,
     description: str | None = None,
     find: str | None = None,
+    speaker: str | None = None,
     only_favourite: bool | None = None,
     output: OutputType = OutputType.TABLE
 ) -> None:
@@ -123,6 +124,7 @@ def list_sessions(
         title: filter on a specific string in the title.
         description: filter on a specific string in the description.
         find: search in title and description.
+        speaker: filter on speaker name.
         only_favourite: display only favourites.
         output: the type of output.
     """
@@ -157,6 +159,14 @@ def list_sessions(
 
         # Get the selected sessions
         all_sessions = session.exec(statement).all()
+
+        # Extra filters
+        if speaker:
+            all_sessions = list(filter(lambda x: len(
+                [a for a in x.speakers
+                 if a.name and speaker and
+                 speaker.lower() in a.name.lower()]) > 0,
+                all_sessions))
 
         if output == OutputType.TABLE:
             view_sessions_as_table(all_sessions)
