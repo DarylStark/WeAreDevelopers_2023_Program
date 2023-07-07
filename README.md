@@ -12,22 +12,30 @@ pip install wad2023-program
 
 ## Usage
 
-After installing, the CLI script can be executed by executing the `wad23` command in your browser. By executing it without arguments, you get a complete list of all sessions. the first time you run the script, it will download these sessions from the program page (from [Sessionize](https://sessionize.com/api/v2/tx3wi18f/view/Sessions) to be precise) and save the page to your `.cache` folder in your homefolder (the folder will be created if it doesn't exist). All subsequent requests will be done using the cache the original page is not flooded with requests.
+After installing, the CLI script can be executed by executing the `wad23` command in your browser. The CLI arguments contain two groups. The syntax is `wad23 <group> [optional argument]`
 
-The script has a few command line arguments you can use to sort and filter the list. You can use `--help` to see these. Here is a list of the command line options:
-
--   `--sort=<sort_field>`: specify a field to sort on. Can be `start`, `end`, `title`, `speaker` or `stage`.
--   `--in-title=<text>`: shows only session with a specific word in the title field. For example, the command line argument `--in-title=python` will only display sessions with the word Python in it.
--   `--in-speaker=<text>`: shows only sessions with a specific word in the speaker field.
--   `--in-description=<text>`: shows only sessions with a specific word in the description field.
--   `--stage=<stage_name>`: filters on stage. The stage has to match exactly, like `--stage="Stage 2"`, for instance.
--   `--output=<output_format>`: let's you specify a output format. Can be either `table` (default), `csv` for CSV output or `details` for detailed output. The detailed output will also display the description.
--   `--cache` and `--no-cache`: specifies if the script should use the cache. By default, it uses the cache file, but if you want to skip that, you can specify `--no-cache`. Be warned though: do _not_ flood the webserver of Sessionize with requests!
+-   `wad23 sync`: syncs the database with the sessions on the website of the conference. This should be done before using the command.
+-   `wad23 sessions`: lists the sessions in the database.
+    -   You can filter the sessions with the following optional arguments:
+        -   `--title`: filter on specific words in the title.
+        -   `--description`: filter on specific words in the description.
+        -   `--find`: filter on specific words in the description and the title.
+        -   `--speaker`: filter on specific words in the names of the speakers.
+        -   `--speaker-tagline`: filter on specific words in the tagline of the speakers.
+        -   `--speakers-bio`: filter on specific words in the bio of the speakers.
+        -   `--only-favourite`: display only sessions that you marked as favourite.
+        -   `--no-only-favourite`: display only sessions that you not marked as favourite.
+    -   You can also specify how to output the file:
+        -   `--output=table`: the default; displays a table with the sessions
+        -   `--output=details`: displays the sessions with extra details, like the speakers and the description.
+        -   `--output=csv`: displays the sessions in CSV format.
+    -   And you can mark sessions as favourite:
+        -   `--set-as-favourite`: set the selected sessions as favourite.
+        -   `--no-set-as-favourite`: set the selected sessions as not favourite.
 
 ## Configuration
 
 There is not much to configure for the application, but there are a few configuration options you have. These configuration options are set with environment variables:
 
--   `CACHE_FILE`: specifies where the cache file should be placed. Default: `~/.cache/program.html`
--   `PROGRAM_URL`: specifies where to download the program from. Default: `https://sessionize.com/api/v2/tx3wi18f/view/Sessions`
--   `PROGRAM_PARAMS`: dictionary that sets specific parameters to the web URL. Default: `dict = {'under': True}`
+-   `DB_CONNECTION_STR`: set the connection string for the database. By default it uses a `SQLite` database in the local directory, but you can, for instance, use a PostgreSQL database by specifing `postgresql+pg8000://<username:<password>@<server>/<database-name>`.
+-   `PROGRAM_ID` and `WORKSHOPS_ID`: the ID for Sessionize for the program and the workshops. The defaults are good for WeAreDevelopers 2023.
