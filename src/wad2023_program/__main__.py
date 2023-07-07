@@ -114,6 +114,7 @@ def list_sessions(
     speaker_tagline: str | None = None,
     speaker_bio: str | None = None,
     only_favourite: bool | None = None,
+    set_as_favourite: bool | None = None,
     output: OutputType = OutputType.TABLE
 ) -> None:
     """List a subset or all of the sessions.
@@ -130,6 +131,7 @@ def list_sessions(
         speaker_tagline: filter on speaker tagline.
         speaker_bio: filter on speaker biography.
         only_favourite: display only favourites.
+        set_as_favourite: set the selected sessions as favourite.
         output: the type of output.
     """
     # Filter on sessions
@@ -184,6 +186,11 @@ def list_sessions(
                  speaker_bio.lower() in a.bio.lower()]) > 0,
                 all_sessions))
 
+        # Set as favourite, if that is set
+        if set_as_favourite is not None:
+            for sess in all_sessions:
+                sess.favourite = set_as_favourite
+
         if output == OutputType.TABLE:
             view_sessions_as_table(all_sessions)
 
@@ -192,6 +199,8 @@ def list_sessions(
 
         if output == OutputType.DETAILS:
             view_sessions_as_details(all_sessions)
+
+        session.commit()
 
 
 if __name__ == '__main__':
