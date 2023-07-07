@@ -183,7 +183,7 @@ def sync() -> None:
 
                 # Get the stage
                 stage_statement = select(Stage).where(
-                    Stage.uid == sess['stage']['uid'])
+                    Stage.uid == int(sess['stage']['uid']))
                 result_stages = session.exec(stage_statement).all()
                 if len(result_stages) != 1:
                     session_object.stage = Stage(**sess['stage'])

@@ -17,7 +17,20 @@
                 "--find=fireside chat"
             ],
             "cwd": "${workspaceFolder}/src",
-            "envFile": "${workspaceFolder}/.environment/dev.env"
+            "envFile": "${workspaceFolder}/.environment/prod.postgres.env"
+        },
+        {
+            "name": "Sync",
+            "type": "python",
+            "request": "launch",
+            "module": "wad2023_program",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args": [
+                "sync"
+            ],
+            "cwd": "${workspaceFolder}/src",
+            "envFile": "${workspaceFolder}/.environment/prod.postgres.env"
         }
     ]
 }
