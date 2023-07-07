@@ -5,8 +5,8 @@ Contains the CLI script for the `wad23` application.
 
 from enum import Enum
 from logging import INFO, basicConfig, getLogger
-from sqlite3 import OperationalError
 
+from sqlalchemy.exc import OperationalError
 from sqlmodel import Session as DBSession
 from sqlmodel import or_, select
 from typer import Typer
@@ -19,8 +19,6 @@ from .model import Session, SessionType
 from .sessionize_parser import SessionizeParser
 from .view import (view_sessions_as_csv, view_sessions_as_details,
                    view_sessions_as_table)
-
-from sqlalchemy.exc import OperationalError
 
 # Create the Typer app
 app = Typer(name='WeAreDevelopers 2023 Conference')
