@@ -3,7 +3,6 @@
 Contains the CLI script for the `wad23` application.
 """
 
-from datetime import datetime
 from enum import Enum
 from logging import INFO, basicConfig, getLogger
 
@@ -15,9 +14,11 @@ from sqlmodel import Session as DBSession
 from sqlmodel import or_, select
 from typer import Typer
 
+from wad2023_program.sync import sync_sessions, sync_speakers
+
 from .app_config import AppConfig
 from .database import create_tables, get_db_engine
-from .model import Session, SessionType, Speaker, SpeakerLink, Stage
+from .model import Session, SessionType, Speaker
 from .sessionize_parser import SessionizeParser
 
 # Create the Typer app
@@ -102,9 +103,6 @@ def sync() -> None:
         sessionize_id=config.workshops_id)
     workshops.update()
 
-    # Empty dict for speakers; will come in handy later
-    speakers_by_uid = {}
-
     # Synchronize the speakers
     logger.info('Starting to sync speakers')
     all_speakers = []
@@ -113,35 +111,7 @@ def sync() -> None:
     if workshops.speakers:
         all_speakers += workshops.speakers
 
-    with DBSession(engine, expire_on_commit=False) as session:
-        for speaker in all_speakers:
-            # Check if the speaker is already in the database
-            statement = select(Speaker).where(Speaker.uid == speaker['uid'])
-            results = session.exec(statement).all()
-            if len(results) != 1:
-                # Speaker is new, add it
-                logger.info('Speaker "%s" is new, adding it', speaker['name'])
-                speaker_object = Speaker()
-                speaker_object.uid = str(speaker.get('uid', ''))
-                speaker_object.name = str(speaker.get('name', ''))
-                speaker_object.tagline = str(speaker.get('tagline', ''))
-                speaker_object.bio = str(speaker.get('bio', ''))
-                speaker_object.img_url = str(speaker.get('img_url', ''))
-
-                # Add the links
-                for name, url in speaker['links'].items():
-                    # pylint: disable=no-member
-                    speaker_object.links.append(SpeakerLink(
-                        name=name,
-                        url=url
-                    ))
-            else:
-                speaker_object = results[0]
-                speaker_object.update = datetime.now()
-
-            session.add(speaker_object)
-            speakers_by_uid[speaker_object.uid] = speaker_object
-        session.commit()
+    speakers_by_uid = sync_speakers(engine, all_speakers)
 
     # Synchronize the sessions
     logger.info('Starting to sync sessions')
@@ -155,46 +125,7 @@ def sync() -> None:
             sess['type'] = 'workshop'
         all_sessions += workshops.sessions
 
-    with DBSession(engine, expire_on_commit=False) as session:
-        for sess in all_sessions:
-            sess_statement = select(Session).where(Session.uid == sess['uid'])
-            result_sessions = session.exec(sess_statement).all()
-            if len(result_sessions) != 1:
-                # Speaker is new, add it
-                logger.info('Session "%s" is new, adding it', sess['title'])
-                session_object = Session()
-                session_object.uid = int(sess.get('uid', 0))
-                session_object.title = str(sess.get('title', ''))
-                session_object.start_time = sess.get('start_time', '')
-                session_object.end_time = sess.get('end_time', '')
-                session_object.description = sess.get('description', '')
-                session_object.session_type = sess.get('type', 'session')
-
-                # Loop through the speakers
-                for speaker in sess['speakers']:
-                    # pylint: disable=no-member
-                    if speaker['uid'] in speakers_by_uid:
-                        session_object.speakers.append(
-                            speakers_by_uid[speaker['uid']])
-                    else:
-                        session_object.speakers.append(
-                            Speaker(uid=speaker['uid'],
-                                    name=speaker['name']))
-
-                # Get the stage
-                stage_statement = select(Stage).where(
-                    Stage.uid == int(sess['stage']['uid']))
-                result_stages = session.exec(stage_statement).all()
-                if len(result_stages) != 1:
-                    session_object.stage = Stage(**sess['stage'])
-                else:
-                    session_object.stage = result_stages[0]
-            else:
-                session_object = result_sessions[0]
-                session_object.update = datetime.now()
-
-            session.add(session_object)
-        session.commit()
+    sync_sessions(engine, all_sessions, speakers_by_uid)
 
 
 @app.command(name='sessions', help='List sessions')

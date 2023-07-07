@@ -17,7 +17,7 @@
                 "--find=fireside chat"
             ],
             "cwd": "${workspaceFolder}/src",
-            "envFile": "${workspaceFolder}/.environment/prod.postgres.env"
+            "envFile": "${workspaceFolder}/.environment/dev.env"
         },
         {
             "name": "Sync",
@@ -30,7 +30,7 @@
                 "sync"
             ],
             "cwd": "${workspaceFolder}/src",
-            "envFile": "${workspaceFolder}/.environment/prod.postgres.env"
+            "envFile": "${workspaceFolder}/.environment/dev.env"
         }
     ]
 }
