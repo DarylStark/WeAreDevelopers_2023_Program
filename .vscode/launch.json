@@ -13,8 +13,35 @@
             "justMyCode": true,
             "args": [
                 "sessions",
-                "--output=details",
-                "--find=fireside chat"
+                "--output=details"
+            ],
+            "cwd": "${workspaceFolder}/src",
+            "envFile": "${workspaceFolder}/.environment/dev.env"
+        },
+        {
+            "name": "Table output",
+            "type": "python",
+            "request": "launch",
+            "module": "wad2023_program",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args": [
+                "sessions",
+                "--output=table"
+            ],
+            "cwd": "${workspaceFolder}/src",
+            "envFile": "${workspaceFolder}/.environment/dev.env"
+        },
+        {
+            "name": "CSV output",
+            "type": "python",
+            "request": "launch",
+            "module": "wad2023_program",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args": [
+                "sessions",
+                "--output=csv"
             ],
             "cwd": "${workspaceFolder}/src",
             "envFile": "${workspaceFolder}/.environment/dev.env"
