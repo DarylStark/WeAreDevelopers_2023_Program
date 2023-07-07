@@ -111,6 +111,8 @@ def list_sessions(
     description: str | None = None,
     find: str | None = None,
     speaker: str | None = None,
+    speaker_tagline: str | None = None,
+    speaker_bio: str | None = None,
     only_favourite: bool | None = None,
     output: OutputType = OutputType.TABLE
 ) -> None:
@@ -125,6 +127,8 @@ def list_sessions(
         description: filter on a specific string in the description.
         find: search in title and description.
         speaker: filter on speaker name.
+        speaker_tagline: filter on speaker tagline.
+        speaker_bio: filter on speaker biography.
         only_favourite: display only favourites.
         output: the type of output.
     """
@@ -166,6 +170,18 @@ def list_sessions(
                 [a for a in x.speakers
                  if a.name and speaker and
                  speaker.lower() in a.name.lower()]) > 0,
+                all_sessions))
+        if speaker_tagline:
+            all_sessions = list(filter(lambda x: len(
+                [a for a in x.speakers
+                 if a.tagline and speaker_tagline and
+                 speaker_tagline.lower() in a.tagline.lower()]) > 0,
+                all_sessions))
+        if speaker_bio:
+            all_sessions = list(filter(lambda x: len(
+                [a for a in x.speakers
+                 if a.bio and speaker_bio and
+                 speaker_bio.lower() in a.bio.lower()]) > 0,
                 all_sessions))
 
         if output == OutputType.TABLE:
